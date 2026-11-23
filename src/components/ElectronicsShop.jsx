@@ -2,7 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { 
   Star, ArrowUpRight,
   Award, AlertTriangle, Scale, Bookmark, Copy, RefreshCw,
-  Search, X, SlidersHorizontal, RotateCcw, Zap, Check, Truck, ChevronDown
+  Search, X, SlidersHorizontal, RotateCcw, Zap, Check, Truck, ChevronDown,
+  Smartphone, Laptop, Tablet, Headphones, Music, Watch, Tv, Wifi,
+  BatteryCharging, Cable, Keyboard, Mouse, Monitor, Volume2, Camera,
+  HardDrive, Folder, ShoppingBag
 } from 'lucide-react';
 import { 
   CATEGORIES, BUDGET_RANGES, PURPOSES, PRODUCTS, STORE_CONFIG,
@@ -15,7 +18,29 @@ import { getAffiliateUrl, recordAffiliateClick } from '../services/affiliate';
 import ProductDetailModal from './ProductDetailModal';
 import CompareModal from './CompareModal';
 import Toast from './Toast';
+import PlatformBadge from './PlatformBadge';
 import { playHapticClick, playSuccessChime } from '../utils/audioFeedback';
+
+const CATEGORY_ICONS = {
+  smartphone: Smartphone,
+  laptop: Laptop,
+  tablet: Tablet,
+  tws: Headphones,
+  headphone: Music,
+  smartwatch: Watch,
+  tv: Tv,
+  router: Wifi,
+  powerbank: BatteryCharging,
+  charger: Zap,
+  cable: Cable,
+  keyboard: Keyboard,
+  mouse: Mouse,
+  monitor: Monitor,
+  speaker: Volume2,
+  camera: Camera,
+  harddisk: HardDrive,
+  pendrive: Folder
+};
 
 export default function ElectronicsShop({ initialSearchQuery, onClearInitialSearch }) {
   const [selectedCat, setSelectedCat] = useState(CATEGORIES[0]);
@@ -306,10 +331,11 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
         </div>
       </div>
 
-      {/* Category Pills */}
+      {/* Category Pills with Crisp Lucide Vector Icons */}
       <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-none">
         {CATEGORIES.map((cat) => {
           const isSelected = selectedCat.id === cat.id;
+          const IconComp = CATEGORY_ICONS[cat.id] || ShoppingBag;
           return (
             <button
               key={cat.id}
@@ -326,7 +352,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                   : 'bg-white border border-[#EBEBF0] text-[#666666] hover:bg-[#F8F9FA]'
               }`}
             >
-              <span>{cat.icon}</span>
+              <IconComp className={`w-3.5 h-3.5 flex-shrink-0 ${isSelected ? 'text-white' : 'text-[#666666]'}`} />
               <span>{cat.label}</span>
             </button>
           );
@@ -486,7 +512,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
               }`}
             >
               <Zap className="w-3 h-3 text-[#CA8A04]" />
-              <span>⚡ 10-Min Flash Delivery</span>
+              <span>10-Min Flash Delivery</span>
             </button>
 
             {/* Genuine Price Drops Toggle */}
@@ -502,7 +528,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
               }`}
             >
               <Award className="w-3 h-3 text-[#008738]" />
-              <span>🔥 Genuine Price Drops</span>
+              <span>Genuine Price Drops</span>
             </button>
 
             {/* 4.5★ & Above Rating Toggle */}
@@ -618,14 +644,14 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
 
             {deliveryFilter === 'quick' && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FEFCE8] border border-[#FEF08A] text-[#CA8A04] font-medium">
-                <span>⚡ 10-Min Flash</span>
+                <span>10-Min Flash</span>
                 <button onClick={() => setDeliveryFilter('all')} className="hover:text-black font-bold">✕</button>
               </span>
             )}
 
             {dealFilter === 'drops' && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F3FBEF] border border-[#008738]/30 text-[#008738] font-medium">
-                <span>🔥 Price Drops</span>
+                <span>Price Drops</span>
                 <button onClick={() => setDealFilter('all')} className="hover:text-black font-bold">✕</button>
               </span>
             )}
@@ -809,6 +835,24 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                       key={prod.id}
                       className="bg-white rounded-xl p-5 border border-[#EBEBF0] shadow-card hover:shadow-card-hover transition-all"
                     >
+                      {/* BRO AI VERDICT BANNER */}
+                      <div className="mb-3.5 p-2.5 rounded-lg bg-[#F3FBEF] border border-[#008738]/25 flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9.5px] font-bold uppercase tracking-wider text-white bg-[#008738] px-2 py-0.5 rounded">
+                            BRO AI Verdict
+                          </span>
+                          <span className="text-xs font-semibold text-[#111111] flex items-center gap-1.5">
+                            <span>Lowest on</span>
+                            <PlatformBadge platformKey={cheapest.store} size="xs" />
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-[#008738] font-bold">
+                          <span>₹{cheapest.price ? cheapest.price.toLocaleString('en-IN') : 'Check Live'}</span>
+                          <span className="text-[#9E9E9E] font-normal">•</span>
+                          <span className="text-[10px] text-[#666666] font-normal">0% Markup Verified</span>
+                        </div>
+                      </div>
+
                       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                         
                         {/* Left: Info */}
@@ -1160,6 +1204,24 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                 key={prod.id}
                 className="bg-white rounded-xl p-5 border border-[#EBEBF0] shadow-card hover:shadow-card-hover transition-all"
               >
+                {/* BRO AI VERDICT BANNER */}
+                <div className="mb-3.5 p-2.5 rounded-lg bg-[#F3FBEF] border border-[#008738]/20 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9.5px] font-bold uppercase tracking-wider text-white bg-[#008738] px-2 py-0.5 rounded">
+                      BRO AI Verdict
+                    </span>
+                    <span className="text-xs font-semibold text-[#111111] flex items-center gap-1.5">
+                      <span>Lowest price on</span>
+                      <PlatformBadge platformKey={cheapest.store} size="xs" />
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-[#008738] font-bold">
+                    <span>₹{cheapest.price ? cheapest.price.toLocaleString('en-IN') : 'Check Live'}</span>
+                    <span className="text-[#9E9E9E] font-normal">•</span>
+                    <span className="text-[10px] text-[#666666] font-normal">Verified 0% Markup</span>
+                  </div>
+                </div>
+
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                   
                   {/* Left: Info */}
@@ -1252,7 +1314,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                                 : 'bg-white border border-[#EBEBF0] text-[#666666]'
                             }`}
                           >
-                            <span className="font-medium">{store?.name || storeKey}</span>
+                            <PlatformBadge platformKey={storeKey} size="xs" />
 
                             <div className="flex items-center gap-2 font-mono tabular-nums">
                               <span className={isCheapest ? 'text-[#008738] font-bold text-sm' : 'text-[#333333]'}>

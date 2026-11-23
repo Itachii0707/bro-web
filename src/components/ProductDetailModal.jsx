@@ -8,6 +8,7 @@ import { fetchPriceHistory, createPriceAlert } from '../services/supabase';
 import { evaluateDealIntelligence, evaluateConditionMatch } from '../services/dealIntelligence';
 import { getAffiliateUrl, recordAffiliateClick } from '../services/affiliate';
 import { useFocusTrap } from '../hooks/useFocusTrap';
+import PlatformBadge from './PlatformBadge';
 import { playHapticClick, playSuccessChime } from '../utils/audioFeedback';
 
 const STORE_META = {
@@ -15,63 +16,63 @@ const STORE_META = {
     name: 'Amazon India',
     logoTag: 'Prime Fulfilled',
     color: '#EA580C',
-    typeBadge: '📦 E-Commerce',
+    typeBadge: 'E-Commerce',
     perks: ['Prime Next-Day Delivery', '5% Amazon Pay Cashback', '7-Day Easy Replacement']
   },
   flipkart: {
     name: 'Flipkart',
     logoTag: 'F-Assured',
     color: '#2563EB',
-    typeBadge: '📦 E-Commerce',
+    typeBadge: 'E-Commerce',
     perks: ['Free Fast Delivery', 'No Cost EMI Options', 'Brand Exchange Bonus']
   },
   croma: {
     name: 'Croma (Tata)',
     logoTag: 'Tata Authentic',
     color: '#008738',
-    typeBadge: '🏬 Retail Chain',
+    typeBadge: 'Retail Chain',
     perks: ['Official Brand Warranty', 'Tata Neu 5% Reward', 'Store Pickup Available']
   },
   reliance: {
     name: 'Reliance Digital',
     logoTag: 'ResQ Warranty',
     color: '#E11D48',
-    typeBadge: '🏬 Retail Chain',
+    typeBadge: 'Retail Chain',
     perks: ['100% Genuine Brand Seal', 'ResQ Authorized Service', 'In-Store Demo & Setup']
   },
   jiomart: {
     name: 'JioMart',
     logoTag: 'Jio Verified',
     color: '#0D9488',
-    typeBadge: '📦 E-Commerce',
+    typeBadge: 'E-Commerce',
     perks: ['Direct Brand Supply', 'Instant Bank Card Discount', 'Hassle-Free Return']
   },
   blinkit: {
     name: 'Blinkit',
-    logoTag: '⚡ 10-Min Flash',
+    logoTag: '10-Min Flash',
     color: '#CA8A04',
-    typeBadge: '⚡ 10-Min Flash',
+    typeBadge: '10-Min Flash',
     perks: ['Instant 10-Min Delivery', 'Genuine Sealed Pack', 'Live Rider GPS Tracking']
   },
   zepto: {
     name: 'Zepto',
-    logoTag: '⚡ 10-Min Flash',
+    logoTag: '10-Min Flash',
     color: '#7C3AED',
-    typeBadge: '⚡ 10-Min Flash',
+    typeBadge: '10-Min Flash',
     perks: ['Ultra-Fast 10-Min Delivery', 'Verified Brand Products', 'No Delivery Delays']
   },
   flipkart_minutes: {
     name: 'Flipkart Minutes',
-    logoTag: '⚡ Minutes Quick',
+    logoTag: '10-Min Quick',
     color: '#0284C7',
-    typeBadge: '⚡ 10-Min Flash',
+    typeBadge: '10-Min Flash',
     perks: ['Superfast 10-15 Min Delivery', 'Flipkart Assured Quality', 'Instant Refund Guarantee']
   },
   vijaysales: {
     name: 'Vijay Sales',
     logoTag: 'VS MegaStore',
     color: '#DC2626',
-    typeBadge: '🏬 Retail Chain',
+    typeBadge: 'Retail Chain',
     perks: ['Authorized Electronics Chain', 'Extended Warranty Option', 'Zero Markup Pricing']
   }
 };
@@ -451,7 +452,7 @@ export default function ProductDetailModal({ product, onClose }) {
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-bold text-sm text-[#333333]">{meta.name}</span>
+                        <PlatformBadge platformKey={storeKey} size="sm" showType={true} />
                         {isWinner ? (
                           <span className="text-[10px] font-bold text-[#008738] bg-[#F3FBEF] px-1.5 py-0.5 rounded">
                             Best Deal

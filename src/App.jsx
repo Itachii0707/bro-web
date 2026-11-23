@@ -12,6 +12,7 @@ import RideDispatchModal from './components/RideDispatchModal';
 import CommandPalette from './components/CommandPalette';
 import WatchlistDrawer from './components/WatchlistDrawer';
 import BroLogo from './components/BroLogo';
+import PlatformBadge from './components/PlatformBadge';
 import { playHapticClick } from './utils/audioFeedback';
 
 const featuredDevice = {
@@ -352,7 +353,7 @@ export default function App() {
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#333333]">{store.name}</span>
+                          <PlatformBadge name={store.name} size="sm" showType={true} />
                           {store.isLowest && (
                             <span className="text-[10px] font-bold text-[#008738] bg-[#E1F7DE] px-2 py-0.5 rounded">
                               Lowest Price
@@ -449,7 +450,7 @@ export default function App() {
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#333333]">{opt.carrier}</span>
+                          <PlatformBadge name={opt.carrier} size="sm" showType={true} />
                           <span className="text-xs text-[#9E9E9E]">• {opt.type}</span>
                           {opt.isBest && (
                             <span className="text-[10px] font-bold text-[#008738] bg-[#E1F7DE] px-2 py-0.5 rounded">

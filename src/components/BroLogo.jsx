@@ -2,7 +2,8 @@ import React from 'react';
 
 /**
  * BRO AI Bespoke Brand Logo
- * Geometric Monogram 'B' uniting Shopping Radar (Golden tag) & Commute Transit (Emerald road sweep)
+ * Precision Vector Symbol: Geometric Radar Crosshair & Price/Transit Vector
+ * Built with pure architectural lines, zero sloppy gradients or Gaussian blurs.
  */
 export default function BroLogo({ size = 32, className = '', showWordmark = false }) {
   return (
@@ -10,78 +11,91 @@ export default function BroLogo({ size = 32, className = '', showWordmark = fals
       <svg
         width={size}
         height={size}
-        viewBox="0 0 48 48"
+        viewBox="0 0 40 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="flex-shrink-0 transition-transform duration-200 hover:scale-105"
         aria-hidden="true"
       >
-        <defs>
-          <linearGradient id="bro-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1E293B" />
-            <stop offset="100%" stopColor="#0F172A" />
-          </linearGradient>
-          <linearGradient id="bro-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F59E0B" />
-            <stop offset="100%" stopColor="#D97706" />
-          </linearGradient>
-          <linearGradient id="bro-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#10B981" />
-            <stop offset="100%" stopColor="#059669" />
-          </linearGradient>
-          <filter id="bro-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-
-        {/* Squircle Backdrop with subtle border */}
+        {/* Dark Obsidian Geometric Rounded Tile */}
         <rect
           x="1"
           y="1"
-          width="46"
-          height="46"
-          rx="12"
-          fill="url(#bro-bg)"
-          stroke="#334155"
+          width="38"
+          height="38"
+          rx="10"
+          fill="#111111"
+          stroke="#262626"
           strokeWidth="1.5"
         />
 
-        {/* Monogram 'B' Spine - Solid Architectural Anchor */}
-        <rect x="11" y="10" width="5.5" height="28" rx="2.75" fill="#F8FAFC" />
+        {/* Radar Range Ring (Subtle Hairline) */}
+        <circle
+          cx="20"
+          cy="20"
+          r="12"
+          stroke="#333333"
+          strokeWidth="1.2"
+          strokeDasharray="2 2"
+        />
 
-        {/* Top Loop: Shopping Intelligence & Price Tag Aperture */}
+        {/* Monogram 'B' Spine - Architectural Pillar */}
+        <rect
+          x="12"
+          y="11"
+          width="3.5"
+          height="18"
+          rx="1.75"
+          fill="#FFFFFF"
+        />
+
+        {/* Top Loop: Shopping Radar Arc */}
         <path
-          d="M14 10H25.5C29.642 10 33 13.134 33 17C33 20.866 29.642 24 25.5 24H14"
-          stroke="url(#bro-gold)"
-          strokeWidth="5"
+          d="M14 11H21.5C24.5376 11 27 13.0147 27 15.5C27 17.9853 24.5376 20 21.5 20H14"
+          stroke="#FFFFFF"
+          strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
 
-        {/* Bottom Loop: Mobility Sweep & Transit Route Curve */}
+        {/* Bottom Loop: Forward Transit Sweep */}
         <path
-          d="M14 24H27C31.418 24 35 27.582 35 32C35 36.418 31.418 40 27 40H14"
-          stroke="url(#bro-emerald)"
-          strokeWidth="5"
+          d="M14 20H23C26.3137 20 29 22.2386 29 25C29 27.7614 26.3137 30 23 30H14"
+          stroke="#FFFFFF"
+          strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
 
-        {/* Central Radar Beacon Node */}
-        <circle cx="24" cy="24" r="2.5" fill="#FFFFFF" filter="url(#bro-glow)" />
+        {/* Central Verified Radar Beacon (Vivid Emerald Target) */}
+        <circle
+          cx="20"
+          cy="20"
+          r="2.2"
+          fill="#008738"
+        />
+        <circle
+          cx="20"
+          cy="20"
+          r="4.2"
+          stroke="#008738"
+          strokeWidth="0.8"
+          strokeOpacity="0.6"
+        />
       </svg>
 
       {showWordmark && (
-        <div className="flex flex-col leading-tight select-none">
+        <div className="flex flex-col leading-none select-none">
           <div className="flex items-center gap-1.5">
-            <span className="font-serif font-black tracking-tight text-base text-[#1E293B]">BRO</span>
-            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-amber-600 text-white tracking-widest uppercase">
+            <span className="font-serif font-black tracking-tight text-[17px] text-[#111111]">
+              BRO
+            </span>
+            <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#008738] text-white tracking-wider uppercase">
               AI
             </span>
           </div>
-          <span className="text-[9px] font-medium text-[#64748B] tracking-wider uppercase">
-            Radar & Arbitrage
+          <span className="text-[8.5px] font-medium text-[#777777] tracking-wider uppercase mt-1">
+            Price & Transit Radar
           </span>
         </div>
       )}

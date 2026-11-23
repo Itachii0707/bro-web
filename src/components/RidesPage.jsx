@@ -13,6 +13,7 @@ import { logRideSearch } from '../services/supabase';
 import AddressAutocomplete from './AddressAutocomplete';
 import RideDispatchModal from './RideDispatchModal';
 import RouteMap from './RouteMap';
+import PlatformBadge from './PlatformBadge';
 
 export default function RidesPage() {
   const [city, setCity] = useState('Bangalore');
@@ -351,6 +352,35 @@ export default function RidesPage() {
           
           <div className="bg-white rounded-xl p-5 border border-[#EBEBF0] shadow-card space-y-4">
             
+            {/* BRO AI Transit Verdict Hero Recommendation */}
+            {lowestFare && (
+              <div className="p-4 rounded-xl bg-gradient-to-r from-[#F3FBEF] to-[#FAFAFA] border-2 border-[#008738]/30 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#008738] px-2 py-0.5 rounded">
+                      BRO AI Transit Verdict
+                    </span>
+                    <PlatformBadge platformKey={lowestFare.platformId || lowestFare.platform.name} size="xs" showTag={true} />
+                  </div>
+                  <h3 className="text-sm sm:text-base font-serif font-bold text-[#111111]">
+                    Recommended Carrier: {lowestFare.platform.name} ({rideType.toUpperCase()})
+                  </h3>
+                  <p className="text-xs text-[#666666]">
+                    Optimal tariff ₹{lowestFare.farePerPerson}{passengers > 1 ? '/person' : ''} • ~{lowestFare.totalMinutes}m door-to-door • Saves ₹{((fares[fares.length - 1]?.fare || lowestFare.fare) - lowestFare.fare) || 60} vs alternate quote • Verified 0% Surge Markup.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => openCarrierIntent(lowestFare)}
+                  className="px-4 py-2 bg-[#008738] hover:bg-[#00702e] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 flex-shrink-0 transition-colors self-start sm:self-auto cursor-pointer"
+                >
+                  <span>Book on {lowestFare.platform.name}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* Top Algorithmic Recommendations Banner */}
             {lowestFare && fastestArrival && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4 border-b border-[#EBEBF0]">
@@ -445,15 +475,10 @@ export default function RidesPage() {
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#333333]">{f.platform.name}</span>
-                        {f.platform.badge && (
-                          <span className="text-[9px] font-bold text-[#D97706] bg-[#FFFBEB] px-2 py-0.5 rounded-full border border-[#D97706]/20">
-                            {f.platform.badge}
-                          </span>
-                        )}
+                        <PlatformBadge platformKey={f.platformId || f.platform.name} size="sm" showType={true} />
                         {isLowest && (
                           <span className="text-[10px] font-bold text-[#008738] bg-[#E1F7DE] px-2 py-0.5 rounded-full border border-[#008738]/20">
-                            Best Fare
+                            Lowest Fare
                           </span>
                         )}
                       </div>

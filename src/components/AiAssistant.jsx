@@ -2,17 +2,19 @@ import { useState, useRef, useEffect } from 'react';
 import { 
   Sparkles, ArrowRight, Bot, User, CheckCircle2, 
   ExternalLink, Zap, Compass, Car, ShoppingBag, 
-  ChevronRight, RefreshCw, Cpu, ShieldCheck
+  ChevronRight, RefreshCw, Cpu, ShieldCheck,
+  Smartphone, Headphones, Laptop
 } from 'lucide-react';
 import { PRODUCTS, getRecommendations, getCheapestStore, searchProducts, createDynamicProduct } from '../data/electronics';
 import { calculateFares, RIDE_TYPES } from '../data/rides';
+import PlatformBadge from './PlatformBadge';
 
 const SAMPLE_PROMPTS = [
-  { icon: '⚡', label: 'Fast GaN charger under ₹2000', query: 'fast charger under 2000' },
-  { icon: '📱', label: 'Best camera phone ₹20k - ₹40k', query: 'camera phone under 40000' },
-  { icon: '🚗', label: 'Ride from Koramangala to Airport', query: 'ride to airport from koramangala' },
-  { icon: '🎧', label: 'Best ANC earbuds for college', query: 'anc earbuds for college under 3000' },
-  { icon: '💻', label: 'Laptop for programming under ₹45k', query: 'programming laptop under 45000' },
+  { icon: Zap, label: 'Fast GaN charger under ₹2000', query: 'fast charger under 2000' },
+  { icon: Smartphone, label: 'Best camera phone ₹20k - ₹40k', query: 'camera phone under 40000' },
+  { icon: Car, label: 'Ride from Koramangala to Airport', query: 'ride to airport from koramangala' },
+  { icon: Headphones, label: 'Best ANC earbuds for college', query: 'anc earbuds for college under 3000' },
+  { icon: Laptop, label: 'Laptop for programming under ₹45k', query: 'programming laptop under 45000' },
 ];
 
 function FormattedText({ text, isUser }) {
@@ -336,9 +338,7 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
                                 ₹{cheapest.price ? cheapest.price.toLocaleString('en-IN') : 'Check Live'}
                               </span>
                             </div>
-                            <span className="text-[11px] font-semibold text-[#333333] uppercase bg-white border border-[#EBEBF0] px-2 py-0.5 rounded">
-                              on {cheapest.store}
-                            </span>
+                            <PlatformBadge platformKey={cheapest.store} size="xs" />
                           </div>
                         </div>
 
@@ -384,14 +384,14 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
                             : 'bg-white border-[#EBEBF0]'
                         }`}
                       >
-                        <div className="text-xs font-bold text-[#333333]">{f.platform.name}</div>
+                        <PlatformBadge platformKey={f.platformId || f.platform.name} size="xs" />
                         <div className={`text-base font-mono font-bold my-1 ${i === 0 ? 'text-[#008738]' : 'text-[#333333]'}`}>
                           ₹{f.fare}
                         </div>
                         <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                           i === 0 ? 'bg-[#008738] text-white' : 'text-[#666666] bg-[#F8F9FA] border border-[#EBEBF0]'
                         }`}>
-                          {i === 0 ? '🏆 Lowest' : `~${f.eta}m ETA`}
+                          {i === 0 ? 'Lowest Fare' : `~${f.eta}m ETA`}
                         </span>
                       </div>
                     ))}
@@ -444,16 +444,19 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
         <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666] flex-shrink-0 flex items-center gap-1">
           <Zap className="w-3 h-3 text-[#008738]" /> Prompts:
         </span>
-        {SAMPLE_PROMPTS.map((sp) => (
-          <button
-            key={sp.label}
-            onClick={() => handleSend(sp.query)}
-            className="flex-shrink-0 text-xs px-3 py-1.5 rounded-full bg-white hover:bg-[#F8F9FA] border border-[#EBEBF0] hover:border-[#333333] text-[#333333] font-medium transition-all flex items-center gap-1.5 shadow-2xs"
-          >
-            <span>{sp.icon}</span>
-            <span>{sp.label}</span>
-          </button>
-        ))}
+        {SAMPLE_PROMPTS.map((sp) => {
+          const IconComp = sp.icon;
+          return (
+            <button
+              key={sp.label}
+              onClick={() => handleSend(sp.query)}
+              className="flex-shrink-0 text-xs px-3 py-1.5 rounded-full bg-white hover:bg-[#F8F9FA] border border-[#EBEBF0] hover:border-[#333333] text-[#333333] font-medium transition-all flex items-center gap-1.5 shadow-2xs"
+            >
+              <IconComp className="w-3.5 h-3.5 text-[#008738]" />
+              <span>{sp.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Editorial Prompt Input Bar */}
