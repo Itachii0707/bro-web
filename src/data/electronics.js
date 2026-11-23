@@ -1173,6 +1173,34 @@ export function getRecommendations(categoryId, budgetRange, purpose) {
   });
 }
 
+export function getProductBrand(product) {
+  if (!product) return 'Other';
+  if (product.brand) return product.brand;
+  const name = (product.name || '').toLowerCase();
+  if (name.includes('apple') || name.includes('iphone') || name.includes('macbook') || name.includes('ipad')) return 'Apple';
+  if (name.includes('samsung')) return 'Samsung';
+  if (name.includes('oneplus')) return 'OnePlus';
+  if (name.includes('google') || name.includes('pixel')) return 'Google';
+  if (name.includes('iqoo')) return 'iQOO';
+  if (name.includes('poco')) return 'POCO';
+  if (name.includes('redmi') || name.includes('xiaomi')) return 'Xiaomi';
+  if (name.includes('acer')) return 'Acer';
+  if (name.includes('hp ') || name.startsWith('hp')) return 'HP';
+  if (name.includes('asus') || name.includes('rog') || name.includes('vivobook') || name.includes('tuf')) return 'ASUS';
+  if (name.includes('lenovo')) return 'Lenovo';
+  if (name.includes('dell')) return 'Dell';
+  if (name.includes('sony')) return 'Sony';
+  if (name.includes('boat')) return 'boAt';
+  if (name.includes('razer')) return 'Razer';
+  if (name.includes('logitech')) return 'Logitech';
+  if (name.includes('tp-link')) return 'TP-Link';
+  if (name.includes('canon')) return 'Canon';
+  if (name.includes('gopro')) return 'GoPro';
+  const firstWord = (product.name || '').trim().split(' ')[0];
+  if (!firstWord) return 'Other';
+  return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+}
+
 export function getCheapestStore(product) {
   const stores = product?.price || {};
   const validEntries = Object.entries(stores).filter(([_, p]) => p > 0);

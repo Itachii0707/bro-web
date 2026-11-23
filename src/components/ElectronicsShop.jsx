@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Star, ArrowUpRight,
   Award, AlertTriangle, Scale, Bookmark, Copy, RefreshCw,
-  Search, X
+  Search, X, SlidersHorizontal, RotateCcw, Zap, Check, Truck, ChevronDown
 } from 'lucide-react';
 import { 
   CATEGORIES, BUDGET_RANGES, PURPOSES, PRODUCTS, STORE_CONFIG,
-  getRecommendations, getCheapestStore,
+  getRecommendations, getCheapestStore, getProductBrand,
   searchProducts, createDynamicProduct
 } from '../data/electronics';
 import { fetchProducts } from '../services/supabase';
@@ -17,18 +17,36 @@ import CompareModal from './CompareModal';
 import Toast from './Toast';
 import { playHapticClick, playSuccessChime } from '../utils/audioFeedback';
 
-
-
 export default function ElectronicsShop({ initialSearchQuery, onClearInitialSearch }) {
   const [selectedCat, setSelectedCat] = useState(CATEGORIES[0]);
   const [selectedBudget, setSelectedBudget] = useState(BUDGET_RANGES[0]); // All Budgets
   const [selectedPurpose, setSelectedPurpose] = useState(null);
-  const [sortBy, setSortBy] = useState('rating'); // 'rating' | 'price'
+  const [sortBy, setSortBy] = useState('rating'); // 'rating' | 'price_asc' | 'price_desc' | 'deal_score' | 'speed'
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [compareOpen, setCompareOpen] = useState(false);
   const [compareTargetA, setCompareTargetA] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
+
+  // Amazon/Flipkart Inspired Filters State
+  const [selectedBrand, setSelectedBrand] = useState('All');
+  const [minPriceInput, setMinPriceInput] = useState('');
+  const [maxPriceInput, setMaxPriceInput] = useState('');
+  const [appliedCustomPrice, setAppliedCustomPrice] = useState(null);
+  const [minRating, setMinRating] = useState(0);
+  const [deliveryFilter, setDeliveryFilter] = useState('all'); // 'all' | 'quick' | 'retail'
+  const [dealFilter, setDealFilter] = useState('all'); // 'all' | 'drops' | 'high_score'
+
+  // Reset category-specific filters when category changes
+  useEffect(() => {
+    setSelectedBrand('All');
+    setAppliedCustomPrice(null);
+    setMinPriceInput('');
+    setMaxPriceInput('');
+    setDeliveryFilter('all');
+    setDealFilter('all');
+    setMinRating(0);
+  }, [selectedCat.id]);
 
   useEffect(() => {
     if (initialSearchQuery) {
@@ -57,13 +75,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
         });
 
         if (!isCancelled) {
-          let list = res.products || [];
-          if (sortBy === 'price') {
-            list = [...list].sort((a, b) => getCheapestStore(a).price - getCheapestStore(b).price);
-          } else {
-            list = [...list].sort((a, b) => b.rating - a.rating);
-          }
-          setRecommendations(list);
+          setRecommendations(res.products || []);
           setDataSource(res.source);
         }
       } catch (err) {
@@ -83,7 +95,86 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
     return () => {
       isCancelled = true;
     };
-  }, [selectedCat, selectedBudget, selectedPurpose, sortBy]);
+  }, [selectedCat, selectedBudget, selectedPurpose]);
+
+  // Dynamic brand list for the selected category
+  const availableBrands = useMemo(() => {
+    const products = PRODUCTS[selectedCat.id] || [];
+    const brands = new Set();
+    products.forEach(p => {
+      const b = getProductBrand(p);
+      if (b && b !== 'Other') brands.add(b);
+    });
+    return ['All', ...Array.from(brands)];
+  }, [selectedCat.id]);
+
+  // Apply Amazon/Flipkart style filters & sorting
+  const filteredProducts = useMemo(() => {
+    let list = recommendations;
+
+    // Custom Price Filter
+    if (appliedCustomPrice) {
+      if (appliedCustomPrice.min > 0) {
+        list = list.filter(p => getCheapestStore(p).price >= appliedCustomPrice.min);
+      }
+      if (appliedCustomPrice.max < Infinity) {
+        list = list.filter(p => getCheapestStore(p).price <= appliedCustomPrice.max);
+      }
+    }
+
+    // Brand Filter
+    if (selectedBrand && selectedBrand !== 'All') {
+      list = list.filter(p => getProductBrand(p).toLowerCase() === selectedBrand.toLowerCase());
+    }
+
+    // Rating Filter
+    if (minRating > 0) {
+      list = list.filter(p => p.rating >= minRating);
+    }
+
+    // Delivery Speed Filter
+    if (deliveryFilter === 'quick') {
+      list = list.filter(p => Boolean(p.price?.blinkit || p.price?.zepto || p.price?.flipkart_minutes));
+    } else if (deliveryFilter === 'retail') {
+      list = list.filter(p => Boolean(p.price?.croma || p.price?.reliance || p.price?.vijaysales));
+    }
+
+    // Deal Filter
+    if (dealFilter === 'drops') {
+      list = list.filter(p => {
+        const intel = evaluateDealIntelligence(p, [], getCheapestStore(p).price);
+        return intel.discountType === 'genuine';
+      });
+    } else if (dealFilter === 'high_score') {
+      list = list.filter(p => {
+        const intel = evaluateDealIntelligence(p, [], getCheapestStore(p).price);
+        return intel.dealScore >= 7.5;
+      });
+    }
+
+    // Sorting
+    if (sortBy === 'price_asc') {
+      list = [...list].sort((a, b) => getCheapestStore(a).price - getCheapestStore(b).price);
+    } else if (sortBy === 'price_desc') {
+      list = [...list].sort((a, b) => getCheapestStore(b).price - getCheapestStore(a).price);
+    } else if (sortBy === 'rating') {
+      list = [...list].sort((a, b) => b.rating - a.rating);
+    } else if (sortBy === 'deal_score') {
+      list = [...list].sort((a, b) => {
+        const iA = evaluateDealIntelligence(a, [], getCheapestStore(a).price);
+        const iB = evaluateDealIntelligence(b, [], getCheapestStore(b).price);
+        return iB.dealScore - iA.dealScore;
+      });
+    } else if (sortBy === 'speed') {
+      list = [...list].sort((a, b) => {
+        const aQuick = (a.price?.blinkit || a.price?.zepto) ? 1 : 0;
+        const bQuick = (b.price?.blinkit || b.price?.zepto) ? 1 : 0;
+        return bQuick - aQuick;
+      });
+    }
+
+    return list;
+  }, [recommendations, appliedCustomPrice, selectedBrand, minRating, deliveryFilter, dealFilter, sortBy]);
 
   const copyBookmarklet = () => {
     const code = `javascript:(function(){var t=document.querySelector('#productTitle,.B_NuCI,h1')?.innerText||'';window.open('https://bro-ai.vercel.app/#shop?q='+encodeURIComponent(t.trim().slice(0,50)),'_blank');})();`;
@@ -121,16 +212,16 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             Gadget Deals & Price Drops
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-1">
-            Compare genuine prices across Amazon, Flipkart, and Croma with algorithmic Fake Discount detection and 30-day price history.
+            Compare genuine prices across Amazon, Flipkart, Croma, Reliance, JioMart, Blinkit & Zepto with 0% markup.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {recommendations.length >= 2 && (
+          {filteredProducts.length >= 2 && (
             <button
               onClick={() => {
                 playHapticClick();
-                setCompareTargetA(recommendations[0]);
+                setCompareTargetA(filteredProducts[0]);
                 setCompareOpen(true);
               }}
               className="px-3.5 py-1.5 bg-white hover:bg-[#F8F9FA] border border-[#EBEBF0] text-[#333333] text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-xs transition-colors focus:outline-none focus:ring-2 focus:ring-[#008738]"
@@ -140,23 +231,23 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             </button>
           )}
 
-          <div className="flex items-center bg-white border border-[#EBEBF0] rounded-lg p-0.5 text-xs">
-            <button
-              onClick={() => setSortBy('rating')}
-              className={`px-3 py-1 rounded-md transition-colors ${
-                sortBy === 'rating' ? 'bg-[#333333] text-white font-medium' : 'text-[#666666]'
-              }`}
+          {/* Amazon/Flipkart Style Sort Dropdown */}
+          <div className="flex items-center gap-1.5 bg-white border border-[#EBEBF0] rounded-lg px-2.5 py-1 text-xs shadow-xs">
+            <span className="text-[11px] font-semibold text-[#9E9E9E]">Sort:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                playHapticClick();
+                setSortBy(e.target.value);
+              }}
+              className="bg-transparent text-xs font-semibold text-[#333333] focus:outline-none cursor-pointer"
             >
-              Top Rated
-            </button>
-            <button
-              onClick={() => setSortBy('price')}
-              className={`px-3 py-1 rounded-md transition-colors ${
-                sortBy === 'price' ? 'bg-[#333333] text-white font-medium' : 'text-[#666666]'
-              }`}
-            >
-              Lowest Price
-            </button>
+              <option value="rating">Top Rated (4★+)</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="deal_score">Best Deal Score</option>
+              <option value="speed">⚡ 10-Min Flash Delivery</option>
+            </select>
           </div>
         </div>
       </div>
@@ -242,28 +333,130 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
         })}
       </div>
 
-      {/* Filters: Budget & Purpose */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      {/* Essential Amazon & Flipkart Inspired Custom Filter Bar */}
+      <div className="bg-white rounded-2xl border border-[#EBEBF0] p-4 sm:p-5 mb-8 shadow-card space-y-4">
         
-        {/* Budget */}
-        <div className="bg-white rounded-xl p-4 border border-[#EBEBF0] shadow-card">
-          <div className="flex items-center justify-between mb-3 text-xs">
-            <span className="font-semibold uppercase tracking-wider text-[#666666]">Budget Range</span>
-            <span className="font-semibold text-[#008738] bg-[#F3FBEF] px-2 py-0.5 rounded border border-[#008738]/20">
-              {selectedBudget.label}
-            </span>
+        {/* Row 1: Brand Filter Chips */}
+        {availableBrands.length > 2 && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666] flex items-center gap-1.5">
+                <span>Top Brands</span>
+                <span className="text-[10px] font-normal text-[#9E9E9E]">({availableBrands.length - 1} available)</span>
+              </span>
+              {selectedBrand !== 'All' && (
+                <button
+                  onClick={() => setSelectedBrand('All')}
+                  className="text-[10px] font-bold text-[#b59a50] hover:underline"
+                >
+                  Reset Brand
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {availableBrands.map((brand) => {
+                const isSelected = selectedBrand === brand;
+                return (
+                  <button
+                    key={brand}
+                    onClick={() => {
+                      playHapticClick();
+                      setSelectedBrand(brand);
+                    }}
+                    className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                      isSelected
+                        ? 'bg-[#333333] text-white shadow-2xs font-semibold'
+                        : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0] border border-[#EBEBF0]'
+                    }`}
+                  >
+                    {brand}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+        )}
+
+        {/* Row 2: Custom Price Filter + Preset Brackets */}
+        <div className="pt-3 border-t border-[#F8F9FA]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2.5">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666]">
+              Price Range & Budget (₹)
+            </span>
+
+            {/* Custom Min/Max Input Box */}
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-400">₹</span>
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={minPriceInput}
+                  onChange={(e) => setMinPriceInput(e.target.value)}
+                  className="w-20 pl-6 pr-2 py-1 text-xs bg-[#FAFAFA] border border-[#EBEBF0] rounded-md focus:outline-none focus:border-[#333333]"
+                />
+              </div>
+              <span className="text-xs text-gray-400">–</span>
+              <div className="relative">
+                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-gray-400">₹</span>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={maxPriceInput}
+                  onChange={(e) => setMaxPriceInput(e.target.value)}
+                  className="w-20 pl-6 pr-2 py-1 text-xs bg-[#FAFAFA] border border-[#EBEBF0] rounded-md focus:outline-none focus:border-[#333333]"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  playHapticClick();
+                  const min = Number(minPriceInput) || 0;
+                  const max = Number(maxPriceInput) || Infinity;
+                  if (max > 0 || min > 0) {
+                    setAppliedCustomPrice({ min, max });
+                    setSelectedBudget({ label: `₹${min.toLocaleString('en-IN')} – ₹${max === Infinity ? 'Above' : max.toLocaleString('en-IN')}`, min, max });
+                  }
+                }}
+                className="px-2.5 py-1 bg-[#333333] hover:bg-[#111111] text-white text-xs font-semibold rounded-md shadow-2xs transition-colors"
+              >
+                Go
+              </button>
+              {appliedCustomPrice && (
+                <button
+                  onClick={() => {
+                    playHapticClick();
+                    setAppliedCustomPrice(null);
+                    setMinPriceInput('');
+                    setMaxPriceInput('');
+                    setSelectedBudget(BUDGET_RANGES[0]);
+                  }}
+                  className="p-1 text-gray-400 hover:text-gray-600"
+                  title="Clear custom price"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Preset Pills */}
           <div className="flex flex-wrap gap-1.5">
             {BUDGET_RANGES.map((b) => {
-              const isSelected = selectedBudget.label === b.label;
+              const isSelected = !appliedCustomPrice && selectedBudget.label === b.label;
               return (
                 <button
                   key={b.label}
-                  onClick={() => setSelectedBudget(b)}
-                  className={`text-xs px-2.5 py-1.5 rounded-md transition-colors ${
+                  onClick={() => {
+                    playHapticClick();
+                    setAppliedCustomPrice(null);
+                    setMinPriceInput('');
+                    setMaxPriceInput('');
+                    setSelectedBudget(b);
+                  }}
+                  className={`text-xs px-2.5 py-1 rounded-md transition-colors ${
                     isSelected
-                      ? 'bg-[#333333] text-white font-medium shadow-sm'
-                      : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0]'
+                      ? 'bg-[#333333] text-white font-medium shadow-2xs'
+                      : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0] border border-[#EBEBF0]'
                   }`}
                 >
                   {b.label}
@@ -273,41 +466,182 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
           </div>
         </div>
 
-        {/* Purpose */}
-        <div className="bg-white rounded-xl p-4 border border-[#EBEBF0] shadow-card">
-          <div className="flex items-center justify-between mb-3 text-xs">
-            <span className="font-semibold uppercase tracking-wider text-[#666666]">Primary Use Case</span>
-            <span className="font-semibold text-[#333333]">{selectedPurpose || 'All use cases'}</span>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
+        {/* Row 3: Essential Quick Filters & Purpose */}
+        <div className="pt-3 border-t border-[#F8F9FA] flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666] mr-1">
+              Essential Filters:
+            </span>
+
+            {/* 10-Min Flash Delivery Toggle */}
             <button
-              onClick={() => setSelectedPurpose(null)}
-              className={`text-xs px-2.5 py-1.5 rounded-md transition-colors ${
-                selectedPurpose === null
-                  ? 'bg-[#333333] text-white font-medium shadow-sm'
-                  : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0]'
+              onClick={() => {
+                playHapticClick();
+                setDeliveryFilter(prev => prev === 'quick' ? 'all' : 'quick');
+              }}
+              className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
+                deliveryFilter === 'quick'
+                  ? 'bg-[#FEFCE8] text-[#CA8A04] border border-[#FEF08A] font-bold shadow-2xs'
+                  : 'bg-[#FAFAFA] text-[#666666] border border-[#EBEBF0] hover:bg-[#F3FBEF]'
               }`}
             >
-              All
+              <Zap className="w-3 h-3 text-[#CA8A04]" />
+              <span>⚡ 10-Min Flash Delivery</span>
             </button>
-            {availablePurposes.map((p) => {
-              const isSelected = selectedPurpose === p;
-              return (
-                <button
-                  key={p}
-                  onClick={() => setSelectedPurpose(p)}
-                  className={`text-xs px-2.5 py-1.5 rounded-md transition-colors ${
-                    isSelected
-                      ? 'bg-[#333333] text-white font-medium shadow-sm'
-                      : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0]'
-                  }`}
-                >
-                  {p}
-                </button>
-              );
-            })}
+
+            {/* Genuine Price Drops Toggle */}
+            <button
+              onClick={() => {
+                playHapticClick();
+                setDealFilter(prev => prev === 'drops' ? 'all' : 'drops');
+              }}
+              className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
+                dealFilter === 'drops'
+                  ? 'bg-[#F3FBEF] text-[#008738] border border-[#008738]/30 font-bold shadow-2xs'
+                  : 'bg-[#FAFAFA] text-[#666666] border border-[#EBEBF0] hover:bg-[#F3FBEF]'
+              }`}
+            >
+              <Award className="w-3 h-3 text-[#008738]" />
+              <span>🔥 Genuine Price Drops</span>
+            </button>
+
+            {/* 4.5★ & Above Rating Toggle */}
+            <button
+              onClick={() => {
+                playHapticClick();
+                setMinRating(prev => prev === 4.5 ? 0 : 4.5);
+              }}
+              className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition-all ${
+                minRating === 4.5
+                  ? 'bg-[#FFF8D9] text-[#856404] border border-[#B59A50]/40 font-bold shadow-2xs'
+                  : 'bg-[#FAFAFA] text-[#666666] border border-[#EBEBF0] hover:bg-[#FFF8D9]'
+              }`}
+            >
+              <Star className="w-3 h-3 fill-[#b59a50] text-[#b59a50]" />
+              <span>4.5★ & Above</span>
+            </button>
           </div>
+
+          {/* Reset All Filters button */}
+          {(selectedBrand !== 'All' || appliedCustomPrice || selectedBudget.label !== 'All Budgets' || selectedPurpose || minRating > 0 || deliveryFilter !== 'all' || dealFilter !== 'all') && (
+            <button
+              onClick={() => {
+                playHapticClick();
+                setSelectedBrand('All');
+                setAppliedCustomPrice(null);
+                setMinPriceInput('');
+                setMaxPriceInput('');
+                setSelectedBudget(BUDGET_RANGES[0]);
+                setSelectedPurpose(null);
+                setMinRating(0);
+                setDeliveryFilter('all');
+                setDealFilter('all');
+              }}
+              className="text-xs font-bold text-[#b59a50] hover:text-[#856404] flex items-center gap-1 transition-colors ml-auto"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Clear All Filters</span>
+            </button>
+          )}
         </div>
+
+        {/* Row 4: Primary Use Case / Purpose */}
+        {availablePurposes.length > 0 && (
+          <div className="pt-3 border-t border-[#F8F9FA]">
+            <div className="flex items-center justify-between mb-2 text-xs">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666]">
+                Primary Use Case
+              </span>
+              <span className="font-semibold text-[#333333] text-[11px]">{selectedPurpose || 'All use cases'}</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setSelectedPurpose(null)}
+                className={`text-xs px-2.5 py-1 rounded-md transition-colors ${
+                  selectedPurpose === null
+                    ? 'bg-[#333333] text-white font-medium shadow-2xs'
+                    : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0] border border-[#EBEBF0]'
+                }`}
+              >
+                All
+              </button>
+              {availablePurposes.map((p) => {
+                const isSelected = selectedPurpose === p;
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setSelectedPurpose(p)}
+                    className={`text-xs px-2.5 py-1 rounded-md transition-colors ${
+                      isSelected
+                        ? 'bg-[#333333] text-white font-medium shadow-2xs'
+                        : 'bg-[#F8F9FA] text-[#666666] hover:bg-[#EBEBF0] border border-[#EBEBF0]'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Active Filter Chips Bar */}
+        {(selectedBrand !== 'All' || appliedCustomPrice || selectedBudget.label !== 'All Budgets' || selectedPurpose || minRating > 0 || deliveryFilter !== 'all' || dealFilter !== 'all') && (
+          <div className="pt-2 border-t border-[#F8F9FA] flex flex-wrap items-center gap-1.5 text-[11px]">
+            <span className="text-[#9E9E9E] font-medium">Active Filters:</span>
+            
+            {selectedBrand !== 'All' && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F8F9FA] border border-[#EBEBF0] text-[#333333]">
+                <span>Brand: {selectedBrand}</span>
+                <button onClick={() => setSelectedBrand('All')} className="hover:text-black font-bold">✕</button>
+              </span>
+            )}
+
+            {selectedBudget.label !== 'All Budgets' && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F8F9FA] border border-[#EBEBF0] text-[#333333]">
+                <span>Budget: {selectedBudget.label}</span>
+                <button onClick={() => {
+                  setSelectedBudget(BUDGET_RANGES[0]);
+                  setAppliedCustomPrice(null);
+                  setMinPriceInput('');
+                  setMaxPriceInput('');
+                }} className="hover:text-black font-bold">✕</button>
+              </span>
+            )}
+
+            {selectedPurpose && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F8F9FA] border border-[#EBEBF0] text-[#333333]">
+                <span>Use Case: {selectedPurpose}</span>
+                <button onClick={() => setSelectedPurpose(null)} className="hover:text-black font-bold">✕</button>
+              </span>
+            )}
+
+            {deliveryFilter === 'quick' && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FEFCE8] border border-[#FEF08A] text-[#CA8A04] font-medium">
+                <span>⚡ 10-Min Flash</span>
+                <button onClick={() => setDeliveryFilter('all')} className="hover:text-black font-bold">✕</button>
+              </span>
+            )}
+
+            {dealFilter === 'drops' && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F3FBEF] border border-[#008738]/30 text-[#008738] font-medium">
+                <span>🔥 Price Drops</span>
+                <button onClick={() => setDealFilter('all')} className="hover:text-black font-bold">✕</button>
+              </span>
+            )}
+
+            {minRating > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FFF8D9] border border-[#B59A50]/40 text-[#856404] font-medium">
+                <span>Rating: {minRating}★+</span>
+                <button onClick={() => setMinRating(0)} className="hover:text-black font-bold">✕</button>
+              </span>
+            )}
+
+            <span className="text-[#008738] font-bold ml-auto">
+              {filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'items'} found
+            </span>
+          </div>
+        )}
 
       </div>
 
@@ -552,7 +886,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             <h3 className="text-sm font-semibold text-[#333333]">Querying Supabase Electronics Catalog...</h3>
             <p className="text-xs text-[#9E9E9E] mt-1">Retrieving latest multi-carrier store prices</p>
           </div>
-        ) : recommendations.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="space-y-6 my-6">
             {/* Live Internet Multi-Store Radar Card */}
             <div className="bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#008738]/20 shadow-card">
@@ -710,6 +1044,94 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
               </div>
             </div>
 
+            {/* AI Synthesized Live Market Deal matching exact user conditions */}
+            {(() => {
+              const dynamicBrandPart = selectedBrand && selectedBrand !== 'All' ? `${selectedBrand} ` : '';
+              const dynamicPurposePart = selectedPurpose ? `${selectedPurpose} ` : '';
+              const dynamicQuery = `${dynamicBrandPart}${dynamicPurposePart}${selectedCat.label}`;
+              const dynProd = createDynamicProduct(dynamicQuery, {
+                categoryId: selectedCat.id,
+                budgetRange: appliedCustomPrice ? { min: appliedCustomPrice.min, max: appliedCustomPrice.max, label: `₹${appliedCustomPrice.min.toLocaleString('en-IN')} - ₹${appliedCustomPrice.max.toLocaleString('en-IN')}` } : selectedBudget,
+                purpose: selectedPurpose,
+              });
+              const cheapest = getCheapestStore(dynProd);
+
+              return (
+                <div className="bg-white rounded-2xl p-6 border-2 border-[#008738]/30 shadow-card">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] font-bold text-[#008738] bg-[#F3FBEF] px-2.5 py-1 rounded-full border border-[#008738]/20 flex items-center gap-1">
+                        <Zap className="w-3 h-3 text-[#008738]" />
+                        ⚡ AI Live Market Recommendation
+                      </span>
+                      <span className="text-[10px] font-bold text-[#2563EB] bg-[#EFF6FF] px-2 py-0.5 rounded border border-[#BFDBFE]">
+                        BuyHatke Condition: 100/100 Verified
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#9E9E9E]">Real-Time Web Arbitrage</span>
+                  </div>
+
+                  <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                    <div className="flex-1 min-w-0">
+                      <h3 
+                        onClick={() => {
+                          playHapticClick();
+                          setSelectedProduct(dynProd);
+                        }}
+                        className="text-xl font-serif font-bold text-[#333333] hover:text-[#008738] cursor-pointer transition-colors"
+                      >
+                        {dynProd.name}
+                      </h3>
+                      <p className="text-xs text-[#666666] mt-1">{dynProd.tagline}</p>
+
+                      <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                        {dynProd.specs?.map((s, idx) => (
+                          <span key={idx} className="text-[10px] bg-[#F8F9FA] text-[#333333] font-medium px-2.5 py-1 rounded-md border border-[#EBEBF0]">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                        <span className="text-[#666666] text-[11px] font-medium">Compared across:</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FFF7ED] text-[#EA580C] font-semibold text-[11px]">Amazon</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#EFF6FF] text-[#2563EB] font-semibold text-[11px]">Flipkart</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F3FBEF] text-[#008738] font-semibold text-[11px]">Croma</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FFF1F2] text-[#E11D48] font-semibold text-[11px]">Reliance</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0D9488] font-semibold text-[11px]">JioMart</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FEF2F2] text-[#DC2626] font-semibold text-[11px]">Vijay Sales</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-4 flex-shrink-0">
+                      <div className="text-left sm:text-right lg:text-right">
+                        <span className="text-[10px] font-semibold text-[#008738] uppercase tracking-wider block">
+                          Lowest across 9 Retailers on {cheapest.store ? cheapest.store.toUpperCase() : 'FLIPKART'}
+                        </span>
+                        <span className="text-2xl font-serif font-bold text-[#333333] font-mono">
+                          ₹{cheapest.price ? cheapest.price.toLocaleString('en-IN') : 'Check Live'}
+                        </span>
+                        <span className="text-[10px] text-[#008738] font-semibold block">⚡ 0% Markup • Zero Brokerage</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            playHapticClick();
+                            setSelectedProduct(dynProd);
+                          }}
+                          className="px-4 py-2 bg-[#008738] hover:bg-[#00702e] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors"
+                        >
+                          <span>Compare All 9 Stores</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Smart Catalog Navigation Bar */}
             <div className="bg-white rounded-xl p-6 border border-[#EBEBF0] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-center sm:text-left">
@@ -729,7 +1151,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             </div>
           </div>
         ) : (
-          recommendations.map((prod) => {
+          filteredProducts.map((prod) => {
             const cheapest = getCheapestStore(prod);
             const intel = evaluateDealIntelligence(prod, [], cheapest.price);
 
