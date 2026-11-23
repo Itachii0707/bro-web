@@ -1346,18 +1346,34 @@ export function createDynamicProduct(query, options = {}) {
 
   // Smart Budget Estimation
   let estPrice = 0;
-  if (options.budgetRange && options.budgetRange.min !== undefined && options.budgetRange.min > 0) {
-    estPrice = Math.round((options.budgetRange.min + (options.budgetRange.max === Infinity ? options.budgetRange.min * 1.4 : options.budgetRange.max)) / 2);
+  if (options.budgetRange && options.budgetRange.max !== undefined && options.budgetRange.max !== Infinity) {
+    const minVal = options.budgetRange.min || 0;
+    const maxVal = options.budgetRange.max;
+    estPrice = Math.round(minVal + (maxVal - minVal) * 0.75);
+  } else if (options.budgetRange && options.budgetRange.min !== undefined && options.budgetRange.min > 0) {
+    estPrice = Math.round(options.budgetRange.min * 1.25);
   } else if (detectedCategory === 'laptop') {
     estPrice = 45999;
   } else if (detectedCategory === 'smartphone') {
     estPrice = 24999;
+  } else if (detectedCategory === 'charger') {
+    estPrice = 1499;
+  } else if (detectedCategory === 'cable') {
+    estPrice = 399;
   } else if (detectedCategory === 'tws') {
     estPrice = 2499;
+  } else if (detectedCategory === 'headphone') {
+    estPrice = 2999;
   } else if (detectedCategory === 'smartwatch') {
     estPrice = 3499;
   } else if (detectedCategory === 'tv') {
     estPrice = 32999;
+  } else if (detectedCategory === 'router') {
+    estPrice = 1999;
+  } else if (detectedCategory === 'powerbank') {
+    estPrice = 1499;
+  } else {
+    estPrice = 999;
   }
 
   const amazonBase = estPrice > 0 ? estPrice : 0;

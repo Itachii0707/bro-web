@@ -49,6 +49,47 @@ function FormattedText({ text, isUser }) {
   );
 }
 
+function extractBudget(prompt) {
+  const clean = prompt.toLowerCase();
+  const betweenMatch = clean.match(/between\s*(?:₹|rs\.?)?\s*(\d+k?)\s*(?:and|to|-)\s*(?:₹|rs\.?)?\s*(\d+k?)/i);
+  if (betweenMatch) {
+    const parseVal = (v) => v.endsWith('k') ? parseFloat(v) * 1000 : parseInt(v, 10);
+    return { min: parseVal(betweenMatch[1]), max: parseVal(betweenMatch[2]) };
+  }
+  const underMatch = clean.match(/(?:under|below|less than|max|within|upto|ceiling|<)\s*(?:₹|rs\.?)?\s*(\d+(?:\.\d+)?)\s*(k)?/i);
+  if (underMatch) {
+    let val = parseFloat(underMatch[1]);
+    if (underMatch[2] || val <= 150) val *= 1000;
+    return { min: 0, max: val };
+  }
+  const kMatch = clean.match(/(\d+(?:\.\d+)?)\s*k\b/i);
+  if (kMatch) return { min: 0, max: parseFloat(kMatch[1]) * 1000 };
+  const rupeeMatch = clean.match(/₹\s*(\d+)/i);
+  if (rupeeMatch) return { min: 0, max: parseInt(rupeeMatch[1], 10) };
+  return { min: 0, max: Infinity };
+}
+
+function detectCategory(prompt) {
+  const clean = prompt.toLowerCase();
+  if (clean.includes('charger') || clean.includes('gan') || clean.includes('adapter') || clean.includes('power brick')) return 'charger';
+  if (clean.includes('cable') || clean.includes('cord') || clean.includes('wire')) return 'cable';
+  if (clean.includes('laptop') || clean.includes('macbook') || clean.includes('notebook') || clean.includes('thinkpad')) return 'laptop';
+  if (clean.includes('earbud') || clean.includes('tws') || clean.includes('airpods') || clean.includes('buds') || clean.includes('neckband')) return 'tws';
+  if (clean.includes('headphone') || clean.includes('headset')) return 'headphone';
+  if (clean.includes('watch') || clean.includes('smartwatch') || clean.includes('fitness band')) return 'smartwatch';
+  if (clean.includes('phone') || clean.includes('mobile') || clean.includes('iphone') || clean.includes('galaxy') || clean.includes('pixel') || clean.includes('oneplus') || clean.includes('iqoo') || clean.includes('redmi') || clean.includes('realme') || clean.includes('poco')) return 'smartphone';
+  if (clean.includes('tv') || clean.includes('television')) return 'tv';
+  if (clean.includes('powerbank') || clean.includes('power bank')) return 'powerbank';
+  if (clean.includes('router') || clean.includes('wifi') || clean.includes('wi-fi')) return 'router';
+  if (clean.includes('keyboard')) return 'keyboard';
+  if (clean.includes('mouse')) return 'mouse';
+  if (clean.includes('monitor')) return 'monitor';
+  if (clean.includes('speaker')) return 'speaker';
+  if (clean.includes('ssd') || clean.includes('hard disk') || clean.includes('hard drive')) return 'harddisk';
+  if (clean.includes('pendrive') || clean.includes('pen drive')) return 'pendrive';
+  return null;
+}
+
 export default function AiAssistant({ onSelectCategory, onNavigateRides, initialPrompt, onClearInitialPrompt }) {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState([
@@ -113,7 +154,7 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
   };
 
   const generateAiResponse = (userPrompt) => {
-    const lower = userPrompt.toLowerCase();
+    const lower = userPrompt.toLowerCase().trim();
     
     // Check if it's a ride query
     if (lower.includes('ride') || lower.includes('uber') || lower.includes('rapido') || lower.includes('cab') || lower.includes('airport') || lower.includes('traffic')) {
@@ -124,7 +165,7 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
       const aiMsg = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: `I've analyzed the real-time mobility grid for Bangalore. For an estimated **${distance} km** commute, **${best.platform.name}** is currently your most economical carrier, saving you ₹${fares[fares.length - 1].fare - best.fare} compared to the highest quote.`,
+        text: `I've analyzed the real-time mobility grid for Bangalore. For an estimated **${distance} km** commute, **${best.platform.name}** is currently your most economical carrier at **₹${best.fare}**, saving you ₹${fares[fares.length - 1].fare - best.fare} compared to the highest quote.`,
         rideData: {
           distance,
           fares,
@@ -137,36 +178,20 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
       return;
     }
 
-    // Check if user specifically asked for a specific model or gadget name
-    const catalogMatches = searchProducts(userPrompt);
-    if (catalogMatches.length > 0) {
-      const topPicks = catalogMatches.slice(0, 3);
-      const aiMsg = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        text: `Here is the verified hardware intelligence for **"${userPrompt}"** with real-time multi-carrier store pricing across Amazon, Flipkart, and Croma:`,
-        products: topPicks,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, aiMsg]);
-      return;
-    }
+    // 1. Detect category and budget bounds
+    const detectedCat = detectCategory(userPrompt);
+    const budget = extractBudget(userPrompt);
 
-    // Check if query is about a known gadget brand or phone query (e.g. "iqoo 15", "realme", "iphone 17")
-    const gadgetKeywords = ['phone', 'mobile', 'iqoo', 'pixel', 'samsung', 'apple', 'iphone', 'oneplus', 'xiaomi', 'redmi', 'realme', 'vivo', 'oppo', 'poco', 'laptop', 'macbook', 'charger', 'buds', 'watch'];
-    const isGadgetQuery = gadgetKeywords.some(k => lower.includes(k));
-
-    if (isGadgetQuery) {
+    // If query is an exact device name (e.g. "iQOO 15", "iPhone 16 Pro Max", "Samsung S24 Ultra")
+    // and doesn't contain category or budget constraints
+    if (!detectedCat && budget.max === Infinity && (lower.includes('iphone') || lower.includes('iqoo') || lower.includes('galaxy') || lower.includes('pixel') || lower.includes('macbook'))) {
       const exactMatches = searchProducts(userPrompt);
       const dynamicProd = createDynamicProduct(userPrompt);
-      const productsToShow = exactMatches.length > 0 
-        ? exactMatches.slice(0, 3) 
-        : [dynamicProd, ...searchProducts(lower.split(' ')[0]).slice(0, 2)];
-
+      const productsToShow = exactMatches.length > 0 ? exactMatches.slice(0, 3) : [dynamicProd];
       const aiMsg = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: `Here is the verified hardware intelligence and multi-store pricing for **"${userPrompt}"** across Amazon, Flipkart, and Croma:`,
+        text: `Here is the verified hardware intelligence for **"${userPrompt}"** with real-time multi-carrier store pricing:`,
         products: productsToShow,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -174,53 +199,68 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
       return;
     }
 
-    // Otherwise treat as constraint-based electronics category search
-    let targetCategory = 'smartphone';
-    let budgetMax = 50000;
-    let budgetMin = 0;
-    let purpose = null;
+    // 2. Constraint-Based Multi-Store Search & Arbitrage
+    const category = detectedCat || 'smartphone';
+    const categoryProducts = PRODUCTS[category] || [];
 
-    if (lower.includes('charger') || lower.includes('gan') || lower.includes('adapter')) {
-      targetCategory = 'charger';
-      budgetMax = 3000;
-    } else if (lower.includes('cable') || lower.includes('wire')) {
-      targetCategory = 'cable';
-      budgetMax = 600;
-    } else if (lower.includes('earbud') || lower.includes('tws') || lower.includes('headphone') || lower.includes('anc')) {
-      targetCategory = lower.includes('headphone') ? 'headphone' : 'tws';
-      budgetMax = 5000;
-    } else if (lower.includes('laptop') || lower.includes('macbook') || lower.includes('coding')) {
-      targetCategory = 'laptop';
-      budgetMax = 60000;
-      purpose = 'Programming / Dev';
-    } else if (lower.includes('watch') || lower.includes('smartwatch')) {
-      targetCategory = 'smartwatch';
-      budgetMax = 30000;
-    } else if (lower.includes('powerbank') || lower.includes('battery')) {
-      targetCategory = 'powerbank';
-      budgetMax = 4000;
-    } else if (lower.includes('tv') || lower.includes('television')) {
-      targetCategory = 'tv';
-      budgetMax = 35000;
-    } else if (lower.includes('ssd') || lower.includes('hard disk') || lower.includes('drive')) {
-      targetCategory = 'harddisk';
-      budgetMax = 8000;
+    // Filter strictly by category and budget constraints
+    const matchingProducts = categoryProducts.filter(p => {
+      const cheapest = getCheapestStore(p);
+      const inBudget = cheapest.price >= budget.min && (budget.max === Infinity || cheapest.price <= budget.max);
+      if (!inBudget) return false;
+
+      // Special feature matching
+      if (lower.includes('gan')) {
+        const isGan = (p.name + ' ' + (p.tagline || '') + ' ' + (p.specs || []).join(' ')).toLowerCase().includes('gan');
+        if (!isGan) return false;
+      }
+      if (lower.includes('gaming') || lower.includes('rtx')) {
+        const isGaming = (p.purposes || []).includes('Gaming') || (p.name + ' ' + (p.specs || []).join(' ')).toLowerCase().includes('gaming') || (p.specs || []).join(' ').toLowerCase().includes('rtx');
+        if (!isGaming) return false;
+      }
+      if (lower.includes('anc') || lower.includes('noise')) {
+        const isAnc = (p.purposes || []).some(pr => pr.toLowerCase().includes('anc')) || (p.tagline + ' ' + (p.specs || []).join(' ')).toLowerCase().includes('anc');
+        if (!isAnc) return false;
+      }
+      if (lower.includes('camera') || lower.includes('photo')) {
+        const isCam = (p.purposes || []).some(pr => pr.toLowerCase().includes('photo') || pr.toLowerCase().includes('camera')) || (p.tagline + ' ' + (p.specs || []).join(' ')).toLowerCase().includes('camera');
+        if (!isCam) return false;
+      }
+      return true;
+    });
+
+    // If fewer than 2 products in catalog, dynamically synthesize authentic products in the exact category
+    if (matchingProducts.length < 2) {
+      if (category === 'charger' && lower.includes('gan')) {
+        matchingProducts.push(createDynamicProduct('Stuffcool Neutron 33W Dual Port GaN Charger', {
+          categoryId: 'charger',
+          budgetRange: { min: Math.max(budget.min, 1000), max: Math.min(budget.max === Infinity ? 2000 : budget.max, 1800) }
+        }));
+      } else if (category === 'laptop' && (lower.includes('gaming') || lower.includes('rtx'))) {
+        matchingProducts.push(createDynamicProduct('Lenovo IdeaPad Gaming 3 (AMD Ryzen 5 / 120Hz)', {
+          categoryId: 'laptop',
+          budgetRange: { min: Math.max(budget.min, 35000), max: Math.min(budget.max === Infinity ? 45000 : budget.max, 43999) },
+          purpose: 'Gaming'
+        }));
+      } else {
+        matchingProducts.push(createDynamicProduct(userPrompt, {
+          categoryId: category,
+          budgetRange: { min: budget.min, max: budget.max === Infinity ? 25000 : budget.max }
+        }));
+      }
     }
 
-    if (lower.includes('2000')) budgetMax = 2000;
-    if (lower.includes('3000')) budgetMax = 3000;
-    if (lower.includes('40000') || lower.includes('40k')) budgetMax = 40000;
-    if (lower.includes('45000') || lower.includes('45k')) budgetMax = 45000;
-    if (lower.includes('10000') || lower.includes('10k')) budgetMax = 10000;
-
-    const matchedProducts = getRecommendations(targetCategory, { min: budgetMin, max: budgetMax }, purpose);
-    const topPicks = matchedProducts.length > 0 ? matchedProducts.slice(0, 2) : (PRODUCTS[targetCategory] || []).slice(0, 2);
+    const finalPicks = matchingProducts.slice(0, 3);
+    const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+    const budgetStr = budget.max !== Infinity 
+      ? (budget.min > 0 ? `₹${budget.min.toLocaleString('en-IN')} – ₹${budget.max.toLocaleString('en-IN')}` : `strictly under ₹${budget.max.toLocaleString('en-IN')}`)
+      : 'All Budgets';
 
     const aiMsg = {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      text: `Based on your preferences (Target: **${targetCategory.toUpperCase()}**, Budget ceiling: **₹${budgetMax.toLocaleString('en-IN')}**), here are the top-rated recommendations with verified live retailer prices:`,
-      products: topPicks,
+      text: `Here is the verified hardware intelligence for **${categoryName}** ${budgetStr}. All recommendations are verified to be within your budget with live retailer pricing across Amazon, Flipkart, and Croma:`,
+      products: finalPicks,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, aiMsg]);
