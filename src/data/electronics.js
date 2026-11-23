@@ -1152,37 +1152,138 @@ export function searchProducts(query) {
 }
 
 /**
- * Creates an on-the-fly Dynamic Multi-Store Search Product for any uncataloged search query.
+ * Creates an on-the-fly Dynamic Multi-Store Search Product for any search query or uncataloged category/filter.
+ * Automatically infers hardware specifications, retail deep-links, and realistic budget bands.
  */
-export function createDynamicProduct(query) {
+export function createDynamicProduct(query, options = {}) {
   const clean = (query || 'Custom Gadget').trim();
+  const lower = clean.toLowerCase();
   const encoded = encodeURIComponent(clean);
   const title = clean.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
+  // Smart Category Detection
+  let detectedCategory = options.categoryId || 'electronics';
+  if (!options.categoryId) {
+    if (lower.includes('laptop') || lower.includes('macbook') || lower.includes('thinkpad') || lower.includes('zenbook') || lower.includes('ideapad') || lower.includes('victus') || lower.includes('rog') || lower.includes('tuf') || lower.includes('omen') || lower.includes('vivobook') || lower.includes('notebook')) {
+      detectedCategory = 'laptop';
+    } else if (lower.includes('phone') || lower.includes('mobile') || lower.includes('iphone') || lower.includes('galaxy') || lower.includes('pixel') || lower.includes('oneplus') || lower.includes('iqoo') || lower.includes('redmi') || lower.includes('realme') || lower.includes('vivo') || lower.includes('oppo') || lower.includes('poco') || lower.includes('motorola')) {
+      detectedCategory = 'smartphone';
+    } else if (lower.includes('earbud') || lower.includes('tws') || lower.includes('airpods') || lower.includes('buds') || lower.includes('neckband')) {
+      detectedCategory = 'tws';
+    } else if (lower.includes('headphone')) {
+      detectedCategory = 'headphone';
+    } else if (lower.includes('watch') || lower.includes('band')) {
+      detectedCategory = 'smartwatch';
+    } else if (lower.includes('tv') || lower.includes('television') || lower.includes('oled') || lower.includes('qled')) {
+      detectedCategory = 'tv';
+    } else if (lower.includes('tablet') || lower.includes('ipad') || lower.includes('tab')) {
+      detectedCategory = 'tablet';
+    } else if (lower.includes('charger') || lower.includes('gan') || lower.includes('adapter')) {
+      detectedCategory = 'charger';
+    } else if (lower.includes('monitor')) {
+      detectedCategory = 'monitor';
+    }
+  }
+
+  // Dynamic Spec Inference Engine
+  let dynamicSpecs = [];
+  if (detectedCategory === 'laptop') {
+    const isGaming = lower.includes('gaming') || lower.includes('rtx') || lower.includes('gpu') || lower.includes('tuf') || lower.includes('rog') || lower.includes('victus');
+    dynamicSpecs = [
+      isGaming ? '15.6" Full HD 144Hz IPS High-Refresh Display' : '14"–15.6" Anti-Glare Eye-Care Display',
+      isGaming ? 'Dedicated NVIDIA GeForce RTX / Intel Arc Graphics' : 'Intel Core / AMD Ryzen Multi-Core Processor',
+      '16GB Dual-Channel RAM / 512GB Fast PCIe NVMe SSD',
+      isGaming ? 'Dual Fan StormCool Thermal Exhaust System' : 'Fast Type-C Charging with All-Day Battery Backup'
+    ];
+  } else if (detectedCategory === 'smartphone') {
+    dynamicSpecs = [
+      '6.67" 120Hz Full HD+ AMOLED HDR10+ Display',
+      'High-Efficiency 4nm 5G Mobile Processor',
+      '50MP OIS Primary Camera with Night Mode',
+      '5000mAh Battery with 45W–120W Fast FlashCharge'
+    ];
+  } else if (detectedCategory === 'tws' || detectedCategory === 'headphone') {
+    dynamicSpecs = [
+      'Active Noise Cancellation (ANC) up to 45dB',
+      '12.4mm Deep Bass Dynamic Audio Drivers',
+      'Up to 38 Hours Total Playtime with Fast Charge',
+      'Bluetooth 5.3 with Dual-Device Fast Pairing'
+    ];
+  } else if (detectedCategory === 'smartwatch') {
+    dynamicSpecs = [
+      '1.43" Vivid AMOLED Always-On Display',
+      'Continuous Heart Rate, SpO2 & Sleep Tracking',
+      'Bluetooth Calling with Noise-Reduced Mic',
+      'IP68 Dust & Water Resistance with 7-Day Battery'
+    ];
+  } else if (detectedCategory === 'tv') {
+    dynamicSpecs = [
+      '4K Ultra HD Display with Dolby Vision & HDR10+',
+      '30W Dolby Atmos Cinema Surround Speakers',
+      'Google TV OS with Netflix, Prime & Disney+ Hotstar',
+      'Dual-Band WiFi 5GHz + 3x HDMI eARC Ports'
+    ];
+  } else {
+    dynamicSpecs = [
+      'Direct real-time query across Indian retail networks',
+      'Zero markup transparent store links with 0% commission',
+      'Eligible for 5% Bank Card Instant Cashback Arbitrage',
+      'Automated 6-Hour Price Drop Watchdog tracking'
+    ];
+  }
+
+  // Smart Budget Estimation
+  let estPrice = 0;
+  if (options.budgetRange && options.budgetRange.min !== undefined && options.budgetRange.min > 0) {
+    estPrice = Math.round((options.budgetRange.min + (options.budgetRange.max === Infinity ? options.budgetRange.min * 1.4 : options.budgetRange.max)) / 2);
+  } else if (detectedCategory === 'laptop') {
+    estPrice = 45999;
+  } else if (detectedCategory === 'smartphone') {
+    estPrice = 24999;
+  } else if (detectedCategory === 'tws') {
+    estPrice = 2499;
+  } else if (detectedCategory === 'smartwatch') {
+    estPrice = 3499;
+  } else if (detectedCategory === 'tv') {
+    estPrice = 32999;
+  }
+
+  const amazonBase = estPrice > 0 ? estPrice : 0;
+  const flipkartBase = estPrice > 0 ? Math.round(estPrice * 0.98) : 0;
+  const cromaBase = estPrice > 0 ? Math.round(estPrice * 1.02) : 0;
+
+  // Build targeted retailer query URLs with price parameters when budget is specified
+  let amazonUrl = `https://www.amazon.in/s?k=${encoded}`;
+  let flipkartUrl = `https://www.flipkart.com/search?q=${encoded}`;
+  let cromaUrl = `https://www.croma.com/searchB?q=${encoded}`;
+
+  if (options.budgetRange && options.budgetRange.min !== undefined && options.budgetRange.max !== Infinity) {
+    // Amazon price filter param (in paise: e.g. 2000000-4000000)
+    const minPaise = options.budgetRange.min * 100;
+    const maxPaise = options.budgetRange.max * 100;
+    amazonUrl = `https://www.amazon.in/s?k=${encoded}&rh=p_36%3A${minPaise}-${maxPaise}`;
+    flipkartUrl = `https://www.flipkart.com/search?q=${encoded}&p%5B%5D=facets.price_range.from%3D${options.budgetRange.min}&p%5B%5D=facets.price_range.to%3D${options.budgetRange.max}`;
+  }
+
   return {
-    id: `dyn_${clean.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+    id: `dyn_${clean.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`,
     name: title,
-    category: 'electronics',
-    tagline: `Live multi-store price check across Amazon, Flipkart & Croma`,
+    category: detectedCategory,
+    tagline: `Live multi-store market check across Amazon, Flipkart & Croma`,
     price: {
-      amazon: 0,
-      flipkart: 0,
-      croma: 0,
+      amazon: amazonBase,
+      flipkart: flipkartBase,
+      croma: cromaBase,
     },
     isLiveSearch: true,
     rating: 4.6,
-    badge: '🔍 Live Arbitrage',
-    specs: [
-      'Direct real-time query across Indian retail networks',
-      'Zero markup transparent store links',
-      'Eligible for 5% Bank Card Arbitrage',
-      'Automated 6-Hour Price Drop Watchdog'
-    ],
-    purposes: ['Live Search', 'Multi-Store Comparison'],
-    budgetMin: 0,
-    budgetMax: 100000,
-    amazonUrl: `https://www.amazon.in/s?k=${encoded}`,
-    flipkartUrl: `https://www.flipkart.com/search?q=${encoded}`,
-    cromaUrl: `https://www.croma.com/searchB?q=${encoded}`,
+    badge: '🌐 Live Internet Radar',
+    specs: dynamicSpecs,
+    purposes: options.purpose ? [options.purpose, 'Internet Search'] : ['Live Search', 'Multi-Store Comparison'],
+    budgetMin: options.budgetRange?.min || 0,
+    budgetMax: options.budgetRange?.max || Infinity,
+    amazonUrl,
+    flipkartUrl,
+    cromaUrl,
   };
 }

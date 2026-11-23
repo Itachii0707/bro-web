@@ -481,70 +481,115 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             <p className="text-xs text-[#9E9E9E] mt-1">Retrieving latest multi-carrier store prices</p>
           </div>
         ) : recommendations.length === 0 ? (
-          <div className="bg-white rounded-xl p-8 sm:p-10 text-center border border-[#EBEBF0] my-6 shadow-card">
-            <h3 className="text-base font-serif font-bold text-[#333333] mb-1">No products match this specific filter</h3>
-            <p className="text-xs text-[#9E9E9E] mb-5">
-              No exact match in {selectedBudget.label} for {selectedPurpose || 'selected criteria'}.
-            </p>
-            <button
-              onClick={() => {
-                playHapticClick();
-                setSelectedBudget(BUDGET_RANGES[0]);
-                setSelectedPurpose(null);
-              }}
-              className="px-5 py-2.5 bg-[#333333] hover:bg-[#111111] text-white text-xs font-semibold rounded-lg shadow-sm transition-colors"
-            >
-              Reset filters (Show all {selectedCat.label})
-            </button>
+          <div className="space-y-6 my-6">
+            {/* Live Internet Multi-Store Radar Card */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border-2 border-[#008738]/20 shadow-card">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#008738] bg-[#F3FBEF] px-2.5 py-0.5 rounded-full border border-[#008738]/20">
+                      Live Internet Arbitrage Engine
+                    </span>
+                    <span className="text-[10px] font-bold text-[#b59a50] bg-[#FFF8D9] px-2 py-0.5 rounded">
+                      Real-Time Retail Query
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#333333]">
+                    {selectedPurpose ? `${selectedPurpose} ` : ''}{selectedCat.label} in {selectedBudget.label}
+                  </h3>
+                  <p className="text-xs text-[#666666] mt-1.5 max-w-2xl leading-relaxed">
+                    Direct live search links configured with exact price and category filters across Amazon, Flipkart, and Croma. View real-time stock, lightning deals, and 5% credit card discounts with zero markup.
+                  </p>
+                </div>
 
-            {/* Smart fallback showing available items in this category */}
-            {(PRODUCTS[selectedCat.id] || []).length > 0 && (
-              <div className="mt-8 pt-6 border-t border-[#EBEBF0] text-left">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666]">
-                    Available {selectedCat.label} in our catalog:
-                  </span>
-                  <button
-                    onClick={() => {
-                      playHapticClick();
-                      setSelectedBudget(BUDGET_RANGES[0]);
-                      setSelectedPurpose(null);
-                    }}
-                    className="text-xs font-bold text-[#b59a50] hover:underline"
-                  >
-                    View all ({(PRODUCTS[selectedCat.id] || []).length}) →
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {(PRODUCTS[selectedCat.id] || []).slice(0, 4).map((p) => {
-                    const ch = getCheapestStore(p);
-                    return (
-                      <div 
-                        key={p.id}
-                        className="p-3 rounded-lg bg-[#FAFAFA] border border-[#EBEBF0] flex items-center justify-between gap-3 text-xs"
-                      >
-                        <div className="min-w-0">
-                          <span className="font-bold text-[#333333] block truncate">{p.name}</span>
-                          <span className="text-[10px] text-[#9E9E9E] block truncate">{p.tagline}</span>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <span className="font-mono font-bold text-[#008738] block">₹{ch.price.toLocaleString('en-IN')}</span>
-                          <button
-                            onClick={() => {
-                              playHapticClick();
-                              setSelectedProduct(p);
-                            }}
-                            className="mt-0.5 text-[10px] font-bold text-[#333333] hover:underline"
-                          >
-                            Inspect →
-                          </button>
-                        </div>
-                      </div>
+                <button
+                  onClick={() => {
+                    playHapticClick();
+                    const dyn = createDynamicProduct(
+                      `${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`,
+                      { categoryId: selectedCat.id, budgetRange: selectedBudget, purpose: selectedPurpose }
                     );
-                  })}
-                </div>
+                    setSelectedProduct(dyn);
+                  }}
+                  className="px-4 py-2.5 bg-[#008738] hover:bg-[#00702e] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-2 flex-shrink-0 transition-colors"
+                >
+                  <span>Inspect Live Market Deal</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
               </div>
-            )}
+
+              {/* 3-Store Direct Live Deep-Links */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <a
+                  href={(() => {
+                    const q = encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`);
+                    if (selectedBudget.min > 0 && selectedBudget.max !== Infinity) {
+                      return `https://www.amazon.in/s?k=${q}&rh=p_36%3A${selectedBudget.min * 100}-${selectedBudget.max * 100}`;
+                    }
+                    return `https://www.amazon.in/s?k=${q}`;
+                  })()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] hover:bg-[#FFEDD5] text-xs font-semibold text-[#EA580C] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#EA580C]" />
+                    <span>Search Amazon in this Budget</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={(() => {
+                    const q = encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`);
+                    if (selectedBudget.min > 0 && selectedBudget.max !== Infinity) {
+                      return `https://www.flipkart.com/search?q=${q}&p%5B%5D=facets.price_range.from%3D${selectedBudget.min}&p%5B%5D=facets.price_range.to%3D${selectedBudget.max}`;
+                    }
+                    return `https://www.flipkart.com/search?q=${q}`;
+                  })()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-xs font-semibold text-[#2563EB] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
+                    <span>Search Flipkart in this Budget</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={`https://www.croma.com/searchB?q=${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-xl border border-[#CDEEC6] bg-[#F3FBEF] hover:bg-[#E1F7DE] text-xs font-semibold text-[#008738] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#008738]" />
+                    <span>Search Croma in this Budget</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+              </div>
+            </div>
+
+            {/* Smart Catalog Navigation Bar */}
+            <div className="bg-white rounded-xl p-6 border border-[#EBEBF0] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                <span className="text-xs font-bold text-[#333333] block">Looking for other price ranges?</span>
+                <span className="text-[11px] text-[#666666]">Reset budget filters to view all verified {selectedCat.label} models.</span>
+              </div>
+              <button
+                onClick={() => {
+                  playHapticClick();
+                  setSelectedBudget(BUDGET_RANGES[0]);
+                  setSelectedPurpose(null);
+                }}
+                className="px-4 py-2 bg-[#333333] hover:bg-[#111111] text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex-shrink-0"
+              >
+                Show All {selectedCat.label}
+              </button>
+            </div>
           </div>
         ) : (
           recommendations.map((prod) => {
