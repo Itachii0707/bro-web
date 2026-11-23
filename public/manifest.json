@@ -1,0 +1,19 @@
+{
+  "name": "BRO AI — Smart Price & Fare Intelligence",
+  "short_name": "BRO AI",
+  "description": "Zero-cost multi-retailer electronics price tracker and live Indian cab fare comparison matrix.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#333333",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "travel", "utilities"]
+}

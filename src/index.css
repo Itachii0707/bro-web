@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  /* Editorial & Commerce Typography */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Gantari', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Colors derived from Lenskart Token Extraction */
+  --color-brand-charcoal: #333333;
+  --color-brand-dark: #080808;
+  --color-brand-gold: #b59a50;
+  --color-brand-gold-tint: #fff8d9;
+  --color-brand-emerald: #008738;
+  --color-brand-emerald-tint: #f3fbef;
+  --color-brand-coral: #ff5e48;
+  --color-brand-slate: #737397;
+  --color-surface-bg: #FAFAFA;
+  --color-surface-card: #FFFFFF;
+  --color-surface-border: #EBEBF0;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  --color-text-muted: #9E9E9E;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #FAFAFA;
+  color: #333333;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+  touch-action: manipulation;
+  text-rendering: optimizeLegibility;
+}
+
+/* Custom sleek scrollbars for fluid, polished UX */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #EBEBF0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #CCCCCC;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Tabular numbers for financial and pricing figures */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lenskart Soft Elevation Shadows */
+.shadow-clean {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
