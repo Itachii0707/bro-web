@@ -1,5 +1,89 @@
 // All electronics categories with products, budget ranges, and best-buy links
 
+export const STORE_CONFIG = {
+  amazon: {
+    name: 'Amazon India',
+    type: 'ecom',
+    deliveryType: 'Scheduled / Prime',
+    eta: 'Next-Day Prime',
+    color: '#EA580C',
+    bg: '#FFF7ED',
+    border: '#FED7AA'
+  },
+  flipkart: {
+    name: 'Flipkart',
+    type: 'ecom',
+    deliveryType: 'Scheduled / Plus',
+    eta: '1-2 Days Plus',
+    color: '#2563EB',
+    bg: '#EFF6FF',
+    border: '#BFDBFE'
+  },
+  croma: {
+    name: 'Croma (Tata)',
+    type: 'retail',
+    deliveryType: 'Store Pickup / Express',
+    eta: 'Today / In-Store Pickup',
+    color: '#008738',
+    bg: '#F3FBEF',
+    border: '#CDEEC6'
+  },
+  reliance: {
+    name: 'Reliance Digital',
+    type: 'retail',
+    deliveryType: 'Store Pickup / Express',
+    eta: 'Same-Day / Store Pickup',
+    color: '#E11D48',
+    bg: '#FFF1F2',
+    border: '#FECDD3'
+  },
+  jiomart: {
+    name: 'JioMart',
+    type: 'ecom',
+    deliveryType: 'Scheduled',
+    eta: '1-2 Days Delivery',
+    color: '#0D9488',
+    bg: '#F0FDFA',
+    border: '#99F6E4'
+  },
+  blinkit: {
+    name: 'Blinkit',
+    type: 'quick',
+    deliveryType: '⚡ 10-Min Flash',
+    eta: '10 Mins Flash',
+    color: '#CA8A04',
+    bg: '#FEFCE8',
+    border: '#FEF08A'
+  },
+  zepto: {
+    name: 'Zepto',
+    type: 'quick',
+    deliveryType: '⚡ 10-Min Flash',
+    eta: '10 Mins Flash',
+    color: '#7C3AED',
+    bg: '#F5F3FF',
+    border: '#DDD6FE'
+  },
+  flipkart_minutes: {
+    name: 'Flipkart Minutes',
+    type: 'quick',
+    deliveryType: '⚡ 10-Min Flash',
+    eta: '10-15 Mins Flash',
+    color: '#0284C7',
+    bg: '#F0F9FF',
+    border: '#BAE6FD'
+  },
+  vijaysales: {
+    name: 'Vijay Sales',
+    type: 'retail',
+    deliveryType: 'Store Pickup',
+    eta: 'Today / In-Store',
+    color: '#DC2626',
+    bg: '#FEF2F2',
+    border: '#FECACA'
+  }
+};
+
 export const CATEGORIES = [
   { id: 'smartphone', label: 'Smartphones', icon: '📱' },
   { id: 'laptop', label: 'Laptops', icon: '💻' },
@@ -1251,11 +1335,36 @@ export function createDynamicProduct(query, options = {}) {
   const amazonBase = estPrice > 0 ? estPrice : 0;
   const flipkartBase = estPrice > 0 ? Math.round(estPrice * 0.98) : 0;
   const cromaBase = estPrice > 0 ? Math.round(estPrice * 1.02) : 0;
+  const relianceBase = estPrice > 0 ? Math.round(estPrice * 1.01) : 0;
+  const jiomartBase = estPrice > 0 ? Math.round(estPrice * 0.99) : 0;
+
+  // Quick commerce check: accessories & daily tech items deliverable in 10-15 mins
+  const isQuickDeliverable = ['charger', 'cable', 'powerbank', 'tws', 'headphone', 'smartwatch', 'pendrive', 'mouse', 'keyboard'].includes(detectedCategory);
+
+  const priceMatrix = {
+    amazon: amazonBase,
+    flipkart: flipkartBase,
+    croma: cromaBase,
+    reliance: relianceBase,
+    jiomart: jiomartBase,
+  };
+
+  if (isQuickDeliverable && estPrice > 0) {
+    priceMatrix.blinkit = Math.round(estPrice * 1.02);
+    priceMatrix.zepto = Math.round(estPrice * 1.03);
+    priceMatrix.flipkart_minutes = Math.round(estPrice * 1.01);
+  }
 
   // Build targeted retailer query URLs with price parameters when budget is specified
   let amazonUrl = `https://www.amazon.in/s?k=${encoded}`;
   let flipkartUrl = `https://www.flipkart.com/search?q=${encoded}`;
   let cromaUrl = `https://www.croma.com/searchB?q=${encoded}`;
+  const relianceUrl = `https://www.reliancedigital.in/search?q=${encoded}:relevance`;
+  const jiomartUrl = `https://www.jiomart.com/search/${encoded}`;
+  const blinkitUrl = `https://blinkit.com/s/?q=${encoded}`;
+  const zeptoUrl = `https://www.zeptonow.com/search?query=${encoded}`;
+  const minutesUrl = `https://www.flipkart.com/search?q=${encoded}`;
+  const vijaysalesUrl = `https://www.vijaysales.com/search/${encoded}`;
 
   if (options.budgetRange && options.budgetRange.min !== undefined && options.budgetRange.max !== Infinity) {
     // Amazon price filter param (in paise: e.g. 2000000-4000000)
@@ -1269,15 +1378,11 @@ export function createDynamicProduct(query, options = {}) {
     id: `dyn_${clean.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${Date.now()}`,
     name: title,
     category: detectedCategory,
-    tagline: `Live multi-store market check across Amazon, Flipkart & Croma`,
-    price: {
-      amazon: amazonBase,
-      flipkart: flipkartBase,
-      croma: cromaBase,
-    },
+    tagline: `Live multi-platform arbitrage across E-Commerce, Retail & 10-Min Flash Delivery`,
+    price: priceMatrix,
     isLiveSearch: true,
     rating: 4.6,
-    badge: '🌐 Live Internet Radar',
+    badge: isQuickDeliverable ? '⚡ 10-Min & Omnichannel' : '🌐 Multi-Store Verified',
     specs: dynamicSpecs,
     purposes: options.purpose ? [options.purpose, 'Internet Search'] : ['Live Search', 'Multi-Store Comparison'],
     budgetMin: options.budgetRange?.min || 0,
@@ -1285,5 +1390,11 @@ export function createDynamicProduct(query, options = {}) {
     amazonUrl,
     flipkartUrl,
     cromaUrl,
+    relianceUrl,
+    jiomartUrl,
+    blinkitUrl,
+    zeptoUrl,
+    minutesUrl,
+    vijaysalesUrl,
   };
 }

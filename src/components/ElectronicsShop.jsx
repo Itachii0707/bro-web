@@ -5,7 +5,7 @@ import {
   Search, X
 } from 'lucide-react';
 import { 
-  CATEGORIES, BUDGET_RANGES, PURPOSES, PRODUCTS,
+  CATEGORIES, BUDGET_RANGES, PURPOSES, PRODUCTS, STORE_CONFIG,
   getRecommendations, getCheapestStore,
   searchProducts, createDynamicProduct
 } from '../data/electronics';
@@ -17,11 +17,7 @@ import CompareModal from './CompareModal';
 import Toast from './Toast';
 import { playHapticClick, playSuccessChime } from '../utils/audioFeedback';
 
-const STORE_CONFIG = {
-  amazon:   { name: 'Amazon',   color: '#EA580C', bg: '#FFF7ED', border: '#FED7AA' },
-  flipkart: { name: 'Flipkart', color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
-  croma:    { name: 'Croma',    color: '#008738', bg: '#F3FBEF', border: '#CDEEC6' },
-};
+
 
 export default function ElectronicsShop({ initialSearchQuery, onClearInitialSearch }) {
   const [selectedCat, setSelectedCat] = useState(CATEGORIES[0]);
@@ -362,33 +358,109 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
                   <a
                     href={`https://www.amazon.in/s?k=${encodeURIComponent(searchQuery)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3.5 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] hover:bg-[#FFEDD5] text-xs font-semibold text-[#EA580C] flex items-center justify-between transition-colors shadow-2xs"
+                    className="p-3 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] hover:bg-[#FFEDD5] text-xs font-semibold text-[#EA580C] flex items-center justify-between transition-colors shadow-2xs"
                   >
-                    <span>Search Amazon.in</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C]" />
+                      <span className="truncate">Amazon.in</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
                   </a>
+
                   <a
                     href={`https://www.flipkart.com/search?q=${encodeURIComponent(searchQuery)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3.5 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-xs font-semibold text-[#2563EB] flex items-center justify-between transition-colors shadow-2xs"
+                    className="p-3 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-xs font-semibold text-[#2563EB] flex items-center justify-between transition-colors shadow-2xs"
                   >
-                    <span>Search Flipkart</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+                      <span className="truncate">Flipkart</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
                   </a>
+
                   <a
                     href={`https://www.croma.com/searchB?q=${encodeURIComponent(searchQuery)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3.5 rounded-xl border border-[#CDEEC6] bg-[#F3FBEF] hover:bg-[#E1F7DE] text-xs font-semibold text-[#008738] flex items-center justify-between transition-colors shadow-2xs"
+                    className="p-3 rounded-xl border border-[#CDEEC6] bg-[#F3FBEF] hover:bg-[#E1F7DE] text-xs font-semibold text-[#008738] flex items-center justify-between transition-colors shadow-2xs"
                   >
-                    <span>Search Croma</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#008738]" />
+                      <span className="truncate">Croma Tata</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
+                  </a>
+
+                  <a
+                    href={`https://www.reliancedigital.in/search?q=${encodeURIComponent(searchQuery)}:relevance`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-[#FECDD3] bg-[#FFF1F2] hover:bg-[#FFE4E6] text-xs font-semibold text-[#E11D48] flex items-center justify-between transition-colors shadow-2xs"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#E11D48]" />
+                      <span className="truncate">Reliance Digital</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
+                  </a>
+
+                  <a
+                    href={`https://www.jiomart.com/search/${encodeURIComponent(searchQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-[#99F6E4] bg-[#F0FDFA] hover:bg-[#CCFBF1] text-xs font-semibold text-[#0D9488] flex items-center justify-between transition-colors shadow-2xs"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#0D9488]" />
+                      <span className="truncate">JioMart</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
+                  </a>
+
+                  <a
+                    href={`https://blinkit.com/s/?q=${encodeURIComponent(searchQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-[#FEF08A] bg-[#FEFCE8] hover:bg-[#FEF9C3] text-xs font-semibold text-[#CA8A04] flex items-center justify-between transition-colors shadow-2xs"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#CA8A04]" />
+                      <span className="truncate">Blinkit (10-Min)</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
+                  </a>
+
+                  <a
+                    href={`https://www.zeptonow.com/search?query=${encodeURIComponent(searchQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FE] text-xs font-semibold text-[#7C3AED] flex items-center justify-between transition-colors shadow-2xs"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
+                      <span className="truncate">Zepto (10-Min)</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
+                  </a>
+
+                  <a
+                    href={`https://www.vijaysales.com/search/${encodeURIComponent(searchQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-[#FECACA] bg-[#FEF2F2] hover:bg-[#FEE2E2] text-xs font-semibold text-[#DC2626] flex items-center justify-between transition-colors shadow-2xs"
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
+                      <span className="truncate">Vijay Sales</span>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0" />
                   </a>
                 </div>
               </div>
@@ -518,8 +590,8 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                 </button>
               </div>
 
-              {/* 3-Store Direct Live Deep-Links */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              {/* Multi-Platform Direct Live Deep-Links (E-Commerce, Retail, 10-Min Flash) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 pt-2">
                 <a
                   href={(() => {
                     const q = encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`);
@@ -530,13 +602,13 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                   })()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3.5 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] hover:bg-[#FFEDD5] text-xs font-semibold text-[#EA580C] flex items-center justify-between transition-colors shadow-2xs group"
+                  className="p-3 rounded-xl border border-[#FED7AA] bg-[#FFF7ED] hover:bg-[#FFEDD5] text-xs font-semibold text-[#EA580C] flex items-center justify-between transition-colors shadow-2xs group"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#EA580C]" />
-                    <span>Search Amazon in this Budget</span>
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C]" />
+                    <span className="truncate">Amazon in Budget</span>
                   </div>
-                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
 
                 <a
@@ -549,26 +621,91 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                   })()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3.5 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-xs font-semibold text-[#2563EB] flex items-center justify-between transition-colors shadow-2xs group"
+                  className="p-3 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-xs font-semibold text-[#2563EB] flex items-center justify-between transition-colors shadow-2xs group"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-                    <span>Search Flipkart in this Budget</span>
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+                    <span className="truncate">Flipkart in Budget</span>
                   </div>
-                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
 
                 <a
                   href={`https://www.croma.com/searchB?q=${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3.5 rounded-xl border border-[#CDEEC6] bg-[#F3FBEF] hover:bg-[#E1F7DE] text-xs font-semibold text-[#008738] flex items-center justify-between transition-colors shadow-2xs group"
+                  className="p-3 rounded-xl border border-[#CDEEC6] bg-[#F3FBEF] hover:bg-[#E1F7DE] text-xs font-semibold text-[#008738] flex items-center justify-between transition-colors shadow-2xs group"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#008738]" />
-                    <span>Search Croma in this Budget</span>
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#008738]" />
+                    <span className="truncate">Croma (Tata)</span>
                   </div>
-                  <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={`https://www.reliancedigital.in/search?q=${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}:relevance`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-xl border border-[#FECDD3] bg-[#FFF1F2] hover:bg-[#FFE4E6] text-xs font-semibold text-[#E11D48] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E11D48]" />
+                    <span className="truncate">Reliance Digital</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={`https://www.jiomart.com/search/${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-xl border border-[#99F6E4] bg-[#F0FDFA] hover:bg-[#CCFBF1] text-xs font-semibold text-[#0D9488] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0D9488]" />
+                    <span className="truncate">JioMart</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={`https://blinkit.com/s/?q=${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-xl border border-[#FEF08A] bg-[#FEFCE8] hover:bg-[#FEF9C3] text-xs font-semibold text-[#CA8A04] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#CA8A04]" />
+                    <span className="truncate">Blinkit (10-Min)</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={`https://www.zeptonow.com/search?query=${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-xl border border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FE] text-xs font-semibold text-[#7C3AED] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
+                    <span className="truncate">Zepto (10-Min)</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={`https://www.vijaysales.com/search/${encodeURIComponent(`${selectedPurpose ? selectedPurpose + ' ' : ''}${selectedCat.label}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-xl border border-[#FECACA] bg-[#FEF2F2] hover:bg-[#FEE2E2] text-xs font-semibold text-[#DC2626] flex items-center justify-between transition-colors shadow-2xs group"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
+                    <span className="truncate">Vijay Sales</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
               </div>
             </div>

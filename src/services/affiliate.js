@@ -9,15 +9,48 @@ const AFFILIATE_CONFIG = {
     tag: 'broai-21',
     searchBase: 'https://www.amazon.in/s',
     directParam: 'tag',
+    queryParam: 'k',
   },
   flipkart: {
     affid: 'broai',
     searchBase: 'https://www.flipkart.com/search',
     directParam: 'affid',
+    queryParam: 'q',
   },
   croma: {
     campaign: 'utm_source=broai&utm_medium=affiliate&utm_campaign=price_comparison',
     searchBase: 'https://www.croma.com/searchB',
+    queryParam: 'q',
+  },
+  reliance: {
+    campaign: 'utm_source=broai&utm_medium=affiliate',
+    searchBase: 'https://www.reliancedigital.in/search',
+    queryParam: 'q',
+  },
+  jiomart: {
+    campaign: 'utm_source=broai&utm_medium=affiliate',
+    searchBase: 'https://www.jiomart.com/search',
+    queryParam: 'q',
+  },
+  blinkit: {
+    campaign: 'utm_source=broai&utm_medium=affiliate',
+    searchBase: 'https://blinkit.com/s/',
+    queryParam: 'q',
+  },
+  zepto: {
+    campaign: 'utm_source=broai&utm_medium=affiliate',
+    searchBase: 'https://www.zeptonow.com/search',
+    queryParam: 'query',
+  },
+  flipkart_minutes: {
+    affid: 'broai',
+    searchBase: 'https://www.flipkart.com/search',
+    queryParam: 'q',
+  },
+  vijaysales: {
+    campaign: 'utm_source=broai&utm_medium=affiliate',
+    searchBase: 'https://www.vijaysales.com/search',
+    queryParam: 'q',
   }
 };
 
@@ -25,6 +58,11 @@ const TRUSTED_STORE_DOMAINS = [
   'amazon.in',
   'flipkart.com',
   'croma.com',
+  'reliancedigital.in',
+  'jiomart.com',
+  'blinkit.com',
+  'zeptonow.com',
+  'vijaysales.com',
   'google.com'
 ];
 
@@ -74,19 +112,20 @@ export function getAffiliateUrl(storeKey, productName, rawUrl = '') {
   }
 
   // Direct keyword deep search with affiliate tag attached
+  const qParam = config.queryParam || 'q';
+  let searchUrl = `${config.searchBase}?${qParam}=${encodeURIComponent(cleanName)}`;
+
   if (storeKey === 'amazon') {
-    return `${config.searchBase}?k=${encodeURIComponent(cleanName)}&tag=${config.tag}`;
+    return `${searchUrl}&tag=${config.tag}`;
+  }
+  if (storeKey === 'flipkart' || storeKey === 'flipkart_minutes') {
+    return `${searchUrl}&affid=${config.affid}`;
+  }
+  if (config.campaign) {
+    return `${searchUrl}&${config.campaign}`;
   }
 
-  if (storeKey === 'flipkart') {
-    return `${config.searchBase}?q=${encodeURIComponent(cleanName)}&affid=${config.affid}`;
-  }
-
-  if (storeKey === 'croma') {
-    return `${config.searchBase}?q=${encodeURIComponent(cleanName)}&${config.campaign}`;
-  }
-
-  return `https://www.google.com/search?q=${encodeURIComponent(cleanName)}`;
+  return searchUrl;
 }
 
 /**

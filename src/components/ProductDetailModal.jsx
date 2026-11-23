@@ -5,15 +5,75 @@ import {
   AlertTriangle, CreditCard, Award, Info
 } from 'lucide-react';
 import { fetchPriceHistory, createPriceAlert } from '../services/supabase';
-import { evaluateDealIntelligence } from '../services/dealIntelligence';
+import { evaluateDealIntelligence, evaluateConditionMatch } from '../services/dealIntelligence';
 import { getAffiliateUrl, recordAffiliateClick } from '../services/affiliate';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { playHapticClick, playSuccessChime } from '../utils/audioFeedback';
 
 const STORE_META = {
-  amazon:   { name: 'Amazon.in', logoTag: 'Prime Fulfilled', color: '#EA580C', perks: ['Prime Next-Day Delivery', '5% Amazon Pay Cashback', '7-Day Replacement'] },
-  flipkart: { name: 'Flipkart',  logoTag: 'F-Assured',       color: '#2563EB', perks: ['Free Fast Delivery', 'No Cost EMI Options', 'Brand Exchange Bonus'] },
-  croma:    { name: 'Croma',     logoTag: 'Tata Authentic',  color: '#008738', perks: ['Official Brand Warranty', 'Tata Neu 5% Reward', 'Next-Day Express Hub'] },
+  amazon: {
+    name: 'Amazon India',
+    logoTag: 'Prime Fulfilled',
+    color: '#EA580C',
+    typeBadge: '📦 E-Commerce',
+    perks: ['Prime Next-Day Delivery', '5% Amazon Pay Cashback', '7-Day Easy Replacement']
+  },
+  flipkart: {
+    name: 'Flipkart',
+    logoTag: 'F-Assured',
+    color: '#2563EB',
+    typeBadge: '📦 E-Commerce',
+    perks: ['Free Fast Delivery', 'No Cost EMI Options', 'Brand Exchange Bonus']
+  },
+  croma: {
+    name: 'Croma (Tata)',
+    logoTag: 'Tata Authentic',
+    color: '#008738',
+    typeBadge: '🏬 Retail Chain',
+    perks: ['Official Brand Warranty', 'Tata Neu 5% Reward', 'Store Pickup Available']
+  },
+  reliance: {
+    name: 'Reliance Digital',
+    logoTag: 'ResQ Warranty',
+    color: '#E11D48',
+    typeBadge: '🏬 Retail Chain',
+    perks: ['100% Genuine Brand Seal', 'ResQ Authorized Service', 'In-Store Demo & Setup']
+  },
+  jiomart: {
+    name: 'JioMart',
+    logoTag: 'Jio Verified',
+    color: '#0D9488',
+    typeBadge: '📦 E-Commerce',
+    perks: ['Direct Brand Supply', 'Instant Bank Card Discount', 'Hassle-Free Return']
+  },
+  blinkit: {
+    name: 'Blinkit',
+    logoTag: '⚡ 10-Min Flash',
+    color: '#CA8A04',
+    typeBadge: '⚡ 10-Min Flash',
+    perks: ['Instant 10-Min Delivery', 'Genuine Sealed Pack', 'Live Rider GPS Tracking']
+  },
+  zepto: {
+    name: 'Zepto',
+    logoTag: '⚡ 10-Min Flash',
+    color: '#7C3AED',
+    typeBadge: '⚡ 10-Min Flash',
+    perks: ['Ultra-Fast 10-Min Delivery', 'Verified Brand Products', 'No Delivery Delays']
+  },
+  flipkart_minutes: {
+    name: 'Flipkart Minutes',
+    logoTag: '⚡ Minutes Quick',
+    color: '#0284C7',
+    typeBadge: '⚡ 10-Min Flash',
+    perks: ['Superfast 10-15 Min Delivery', 'Flipkart Assured Quality', 'Instant Refund Guarantee']
+  },
+  vijaysales: {
+    name: 'Vijay Sales',
+    logoTag: 'VS MegaStore',
+    color: '#DC2626',
+    typeBadge: '🏬 Retail Chain',
+    perks: ['Authorized Electronics Chain', 'Extended Warranty Option', 'Zero Markup Pricing']
+  }
 };
 
 export default function ProductDetailModal({ product, onClose }) {
@@ -95,6 +155,10 @@ export default function ProductDetailModal({ product, onClose }) {
 
   // Compute Algorithmic Intelligence
   const intelligence = evaluateDealIntelligence(product, priceHistory, minPrice);
+  const conditionMatch = evaluateConditionMatch(product, {
+    budgetRange: { min: product.budgetMin || 0, max: product.budgetMax || Infinity, label: product.budgetMax ? `Under ₹${product.budgetMax.toLocaleString('en-IN')}` : 'All Budgets' },
+    purpose: product.purposes?.[0]
+  });
 
   const handleActivateAlert = async (e) => {
     e.preventDefault();
@@ -319,15 +383,48 @@ export default function ProductDetailModal({ product, onClose }) {
             </div>
           </div>
           
+          {/* BuyHatke-Style Condition & Best Buy Recommendation Banner */}
+          <div className="p-4 rounded-xl bg-gradient-to-r from-[#F0FDF4] via-[#F8FAFC] to-[#FFFBEB] border border-[#008738]/30 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 pb-2 border-b border-black/5">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded bg-[#008738] text-white">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+                <span className="text-xs font-bold text-[#14532D] uppercase tracking-wider">
+                  Condition Verification Verdict
+                </span>
+              </div>
+              <span className="text-[11px] font-mono font-bold text-[#008738] bg-white px-2 py-0.5 rounded border border-[#008738]/20 self-start sm:self-auto">
+                {conditionMatch.matchScore}/100 Condition Score
+              </span>
+            </div>
+
+            <div className="text-xs font-bold text-[#333333] mb-2">
+              {conditionMatch.bestStoreVerdict}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
+              {conditionMatch.criteria.map((c) => (
+                <div key={c.id} className="p-2 rounded-lg bg-white/80 border border-black/5 text-[11px]">
+                  <div className="flex items-center justify-between font-bold text-[#333333] mb-0.5">
+                    <span>{c.name}</span>
+                    <span className={`text-[10px] ${c.passed ? 'text-[#008738]' : 'text-[#D97706]'}`}>{c.badge}</span>
+                  </div>
+                  <span className="text-[#666666] block leading-tight text-[10px]">{c.detail}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
           {/* Section 1: Store Price Arbitrage Matrix */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#EBEBF0] mb-4 gap-2">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#b59a50] block">
-                  Cross-Retailer Floor
+                  Cross-Retailer Floor & Flash Delivery
                 </span>
                 <h4 className="text-base font-serif font-bold text-[#333333]">
-                  Live Store Price Comparison
+                  Live Multi-Platform Price Comparison
                 </h4>
               </div>
               <span className="text-xs text-[#008738] font-mono font-bold bg-[#F3FBEF] px-2.5 py-1 rounded-full border border-[#008738]/20 self-start sm:self-auto">
@@ -335,13 +432,13 @@ export default function ProductDetailModal({ product, onClose }) {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {storeEntries.map(([storeKey, price]) => {
                 const meta = STORE_META[storeKey] || { name: storeKey, color: '#666', logoTag: 'Retailer', perks: [] };
                 const isWinner = storeKey === minStore;
                 const savings = Math.round(price * 0.08);
                 const mrp = Math.round(price * 1.15);
-                const cloakedUrl = getAffiliateUrl(storeKey, product.name);
+                const cloakedUrl = getAffiliateUrl(storeKey, product.name, product[`${storeKey}Url`]);
 
                 return (
                   <div

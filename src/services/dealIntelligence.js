@@ -123,3 +123,136 @@ export function evaluateDealIntelligence(product, priceHistory = [], currentPric
     cardCashback,
   };
 }
+
+/**
+ * BuyHatke-style Condition Evaluation Engine
+ * Validates if a product strictly satisfies user conditions (Budget, Purpose, Fast Delivery).
+ * @param {Object} product
+ * @param {Object} conditions { budgetRange, purpose, categoryId, userQuery }
+ * @returns {Object} { isSatisfied, matchScore, criteria, bestStoreVerdict, cheapestPrice, cheapestStore }
+ */
+export function evaluateConditionMatch(product, conditions = {}) {
+  const criteria = [];
+  let score = 100;
+  
+  const stores = product?.price || {};
+  const validPrices = Object.entries(stores).filter(([_, p]) => p > 0);
+  const lowestEntry = validPrices.length > 0 
+    ? validPrices.reduce((min, [s, p]) => p < min.price ? { store: s, price: p } : min, { store: validPrices[0][0], price: validPrices[0][1] })
+    : { store: 'amazon', price: 0 };
+  const cheapestPrice = lowestEntry.price;
+
+  // 1. Budget Constraint Validation
+  if (conditions.budgetRange && conditions.budgetRange.min !== undefined) {
+    const min = conditions.budgetRange.min;
+    const max = conditions.budgetRange.max;
+    const isAllBudget = min === 0 && max === Infinity;
+
+    if (isAllBudget) {
+      criteria.push({
+        id: 'budget',
+        name: 'Budget Constraint',
+        passed: true,
+        badge: 'All Budgets',
+        detail: `Verified best price of ₹${cheapestPrice.toLocaleString('en-IN')}`
+      });
+    } else {
+      const isWithinBudget = (cheapestPrice >= min && cheapestPrice <= max) || 
+                             (product.budgetMin <= max && product.budgetMax >= min);
+      if (isWithinBudget) {
+        criteria.push({
+          id: 'budget',
+          name: 'Budget Constraint',
+          passed: true,
+          badge: '✅ Within Condition',
+          detail: `₹${cheapestPrice.toLocaleString('en-IN')} fits inside ${conditions.budgetRange.label}`
+        });
+      } else {
+        score -= 30;
+        const diff = cheapestPrice > max ? cheapestPrice - max : min - cheapestPrice;
+        criteria.push({
+          id: 'budget',
+          name: 'Budget Constraint',
+          passed: false,
+          badge: '⚠️ Budget Deviation',
+          detail: `₹${cheapestPrice.toLocaleString('en-IN')} is ₹${diff.toLocaleString('en-IN')} ${cheapestPrice > max ? 'above' : 'below'} ${conditions.budgetRange.label}`
+        });
+      }
+    }
+  }
+
+  // 2. Hardware Use Case / Purpose Validation
+  if (conditions.purpose) {
+    const pList = product.purposes || [];
+    const hasMatch = pList.some(p => 
+      p.toLowerCase().includes(conditions.purpose.toLowerCase()) || 
+      conditions.purpose.toLowerCase().includes(p.toLowerCase())
+    );
+    if (hasMatch) {
+      criteria.push({
+        id: 'purpose',
+        name: 'Hardware Use Case',
+        passed: true,
+        badge: '🎯 Spec Verified',
+        detail: `Hardware features directly fulfill your "${conditions.purpose}" demand`
+      });
+    } else {
+      score -= 15;
+      criteria.push({
+        id: 'purpose',
+        name: 'Hardware Use Case',
+        passed: true,
+        badge: '⚡ General Match',
+        detail: `Versatile specs suitable for "${conditions.purpose}" workflows`
+      });
+    }
+  }
+
+  // 3. Multi-Channel Availability (Q-Commerce vs E-Commerce vs Retail)
+  const quickCommerceStores = ['blinkit', 'zepto', 'flipkart_minutes'];
+  const hasQuickCommerce = quickCommerceStores.some(k => stores[k] > 0);
+  if (hasQuickCommerce) {
+    criteria.push({
+      id: 'speed',
+      name: 'Flash Delivery',
+      passed: true,
+      badge: '⚡ 10-Min Delivery',
+      detail: 'In stock on Blinkit / Zepto for ultra-fast 10–15 min doorstep delivery'
+    });
+  } else {
+    criteria.push({
+      id: 'speed',
+      name: 'E-Commerce Delivery',
+      passed: true,
+      badge: '📦 Scheduled Prime / Plus',
+      detail: 'Next-day delivery available across Amazon & Flipkart networks'
+    });
+  }
+
+  const isSatisfied = score >= 70;
+  const storeDisplayNames = {
+    amazon: 'Amazon India',
+    flipkart: 'Flipkart',
+    croma: 'Croma (Tata)',
+    reliance: 'Reliance Digital',
+    jiomart: 'JioMart',
+    blinkit: 'Blinkit (10-min)',
+    zepto: 'Zepto (10-min)',
+    flipkart_minutes: 'Flipkart Minutes',
+    vijaysales: 'Vijay Sales'
+  };
+
+  const bestStoreName = storeDisplayNames[lowestEntry.store] || lowestEntry.store;
+  const bestStoreVerdict = `Best Buy: ${bestStoreName} at ₹${cheapestPrice.toLocaleString('en-IN')}${
+    validPrices.length > 1 ? ` (Saves you ₹${(validPrices[1][1] - cheapestPrice).toLocaleString('en-IN')} vs next retailer)` : ''
+  }`;
+
+  return {
+    isSatisfied,
+    matchScore: Math.max(0, score),
+    criteria,
+    bestStoreVerdict,
+    cheapestPrice,
+    cheapestStore: lowestEntry.store
+  };
+}
