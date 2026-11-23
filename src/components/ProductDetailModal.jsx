@@ -30,12 +30,13 @@ export default function ProductDetailModal({ product, onClose }) {
   let minStore = 'croma';
   let minPrice = Infinity;
   storeEntries.forEach(([s, p]) => {
-    if (p < minPrice) {
+    if (p > 0 && p < minPrice) {
       minPrice = p;
       minStore = s;
     }
   });
-  if (minPrice === Infinity) minPrice = 10000;
+  const hasRealPrices = minPrice !== Infinity;
+  if (!hasRealPrices) minPrice = 10000;
 
   const [targetPrice, setTargetPrice] = useState(Math.round(minPrice * 0.95));
   const [alertContact, setAlertContact] = useState('');
@@ -363,14 +364,26 @@ export default function ProductDetailModal({ product, onClose }) {
                         )}
                       </div>
                       <div className="mb-3">
-                        <span className="text-xl font-serif font-bold text-[#333333] block font-mono">
-                          ₹{price.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-[11px] text-[#9E9E9E] line-through block">MRP ₹{mrp.toLocaleString('en-IN')}</span>
-                        {isWinner ? (
-                          <span className="text-[11px] font-bold text-[#008738]">Save ₹{savings.toLocaleString('en-IN')} (~8% off)</span>
+                        {price > 0 ? (
+                          <>
+                            <span className="text-xl font-serif font-bold text-[#333333] block font-mono">
+                              ₹{price.toLocaleString('en-IN')}
+                            </span>
+                            <span className="text-[11px] text-[#9E9E9E] line-through block">MRP ₹{mrp.toLocaleString('en-IN')}</span>
+                            {isWinner ? (
+                              <span className="text-[11px] font-bold text-[#008738]">Save ₹{savings.toLocaleString('en-IN')} (~8% off)</span>
+                            ) : (
+                              <span className="text-[11px] text-[#666666]">₹{(price - minPrice).toLocaleString('en-IN')} above lowest</span>
+                            )}
+                          </>
                         ) : (
-                          <span className="text-[11px] text-[#666666]">₹{(price - minPrice).toLocaleString('en-IN')} above lowest</span>
+                          <>
+                            <span className="text-base font-serif font-bold text-[#333333] block">
+                              Live Store Search
+                            </span>
+                            <span className="text-[11px] text-[#008738] font-medium block">Query Real-Time Stock</span>
+                            <span className="text-[10px] text-[#9E9E9E] block">Instant Zero Markup Check</span>
+                          </>
                         )}
                       </div>
                       <ul className="text-[11px] text-[#666666] space-y-1 mb-4">
@@ -397,7 +410,9 @@ export default function ProductDetailModal({ product, onClose }) {
                           : 'bg-white hover:bg-[#F8F9FA] border border-[#EBEBF0] text-[#333333]'
                       }`}
                     >
-                      {isWinner ? `Direct ${meta.name} Checkout` : `View on ${meta.name}`}
+                      {price > 0 
+                        ? (isWinner ? `Direct ${meta.name} Checkout` : `View on ${meta.name}`)
+                        : `Check ${meta.name} Now`}
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </a>
                   </div>

@@ -32,6 +32,11 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   
+  // Never cache during local development or Vite internal requests
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.pathname.startsWith('/@') || url.pathname.includes('/node_modules/')) {
+    return;
+  }
+  
   // 1. Dedicated Stale-While-Revalidate Caching for Map Tiles (OpenStreetMap & Carto)
   if (url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('basemaps.cartocdn.com')) {
     event.respondWith(

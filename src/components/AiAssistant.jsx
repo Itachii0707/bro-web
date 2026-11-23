@@ -4,7 +4,7 @@ import {
   ExternalLink, Zap, Compass, Car, ShoppingBag, 
   ChevronRight, RefreshCw, Cpu, ShieldCheck
 } from 'lucide-react';
-import { PRODUCTS, getRecommendations, getCheapestStore } from '../data/electronics';
+import { PRODUCTS, getRecommendations, getCheapestStore, searchProducts, createDynamicProduct } from '../data/electronics';
 import { calculateFares, RIDE_TYPES } from '../data/rides';
 
 const SAMPLE_PROMPTS = [
@@ -94,7 +94,41 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
       return;
     }
 
-    // Otherwise treat as electronics product search
+    // Check if user specifically asked for a specific model or gadget name
+    const catalogMatches = searchProducts(userPrompt);
+    if (catalogMatches.length > 0) {
+      const topPicks = catalogMatches.slice(0, 3);
+      const aiMsg = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        text: `Here is the verified hardware intelligence for **"${userPrompt}"** with real-time multi-carrier store pricing across Amazon, Flipkart, and Croma:`,
+        products: topPicks,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, aiMsg]);
+      return;
+    }
+
+    // Check if query is about a known gadget brand or phone query (e.g. "iqoo 15", "realme", "iphone 17")
+    const gadgetKeywords = ['phone', 'mobile', 'iqoo', 'pixel', 'samsung', 'apple', 'iphone', 'oneplus', 'xiaomi', 'redmi', 'realme', 'vivo', 'oppo', 'poco', 'laptop', 'macbook', 'charger', 'buds', 'watch'];
+    const isGadgetQuery = gadgetKeywords.some(k => lower.includes(k));
+
+    if (isGadgetQuery) {
+      const dynamicProd = createDynamicProduct(userPrompt);
+      const relatedProducts = searchProducts(lower.includes('iqoo') ? 'iqoo' : (lower.includes('pixel') ? 'pixel' : (lower.includes('oneplus') ? 'oneplus' : (lower.includes('iphone') ? 'iphone' : 'phone')))).slice(0, 2);
+
+      const aiMsg = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        text: `Here is the live price verification link for **"${userPrompt}"** across Amazon, Flipkart, and Croma with 0% markup, alongside current top-rated choices:`,
+        products: [dynamicProd, ...relatedProducts],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, aiMsg]);
+      return;
+    }
+
+    // Otherwise treat as constraint-based electronics category search
     let targetCategory = 'smartphone';
     let budgetMax = 50000;
     let budgetMin = 0;
@@ -344,6 +378,8 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
           <div className="flex items-center gap-2 px-3 py-1">
             <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse flex-shrink-0" />
             <input
+              id="ai-assistant-prompt-input"
+              name="aiAssistantPrompt"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

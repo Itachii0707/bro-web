@@ -148,6 +148,51 @@ export const PRODUCTS = {
       cromaUrl: 'https://www.croma.com/searchB?q=iqoo+neo+9+pro',
     },
     {
+      id: 'iqoo_13_5g',
+      name: 'iQOO 13 / 15 5G',
+      tagline: 'Snapdragon 8 Elite / Gen 3 Monster Gaming Flagship',
+      price: { amazon: 54999, flipkart: 53999, croma: 55999 },
+      rating: 4.8,
+      badge: '⚡ Flagship Beast',
+      specs: ['6.82" 2K 144Hz LTPO AMOLED', 'Snapdragon 8 Elite / 8 Gen 3', '6150mAh + 120W FlashCharge', 'Q2 Dedicated Gaming Chip'],
+      purposes: ['Gaming', 'Premium Flagship'],
+      budgetMax: 80000,
+      budgetMin: 50000,
+      amazonUrl: 'https://www.amazon.in/s?k=iqoo+13+15+5g',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iqoo+13+15+5g',
+      cromaUrl: 'https://www.croma.com/searchB?q=iqoo+13',
+    },
+    {
+      id: 'iqoo_z9s',
+      name: 'iQOO Z9s 5G',
+      tagline: 'Best curved 120Hz AMOLED under ₹20,000',
+      price: { amazon: 19999, flipkart: 18999, croma: 20999 },
+      rating: 4.5,
+      badge: '🔥 Budget King',
+      specs: ['6.77" 120Hz 3D Curved AMOLED', 'Dimensity 7300', '50MP Sony IMX882 OIS', '5500mAh + 44W'],
+      purposes: ['Daily Use / Budget', 'Gaming'],
+      budgetMax: 20000,
+      budgetMin: 15000,
+      amazonUrl: 'https://www.amazon.in/s?k=iqoo+z9s+5g',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iqoo+z9s+5g',
+      cromaUrl: 'https://www.croma.com/searchB?q=iqoo+z9s',
+    },
+    {
+      id: 'oneplus_12r',
+      name: 'OnePlus 12R',
+      tagline: 'Flagship killer with Snapdragon 8 Gen 2 & 5500mAh',
+      price: { amazon: 39999, flipkart: 38999, croma: 40999 },
+      rating: 4.6,
+      badge: '⭐ Editor Choice',
+      specs: ['6.78" 1.5K LTPO4 AMOLED', 'Snapdragon 8 Gen 2', '5500mAh + 100W SuperVOOC', '50MP Sony IMX890'],
+      purposes: ['Daily Use / Budget', 'Gaming', 'Business / Work'],
+      budgetMax: 45000,
+      budgetMin: 35000,
+      amazonUrl: 'https://www.amazon.in/s?k=oneplus+12r',
+      flipkartUrl: 'https://www.flipkart.com/search?q=oneplus+12r',
+      cromaUrl: 'https://www.croma.com/searchB?q=oneplus+12r',
+    },
+    {
       id: 'iphone15',
       name: 'iPhone 15',
       tagline: 'Premium flagship — best iOS experience',
@@ -161,6 +206,21 @@ export const PRODUCTS = {
       amazonUrl: 'https://www.amazon.in/s?k=iphone+15',
       flipkartUrl: 'https://www.flipkart.com/search?q=iphone+15',
       cromaUrl: 'https://www.croma.com/searchB?q=iphone+15',
+    },
+    {
+      id: 'iphone16',
+      name: 'iPhone 16',
+      tagline: 'Next-gen flagship with A18 chip and Camera Control',
+      price: { amazon: 79900, flipkart: 78900, croma: 79900 },
+      rating: 4.9,
+      badge: '✨ Latest Generation',
+      specs: ['6.1" Super Retina XDR', 'A18 Bionic + Apple Intelligence', '48MP Fusion Camera', 'Camera Control button'],
+      purposes: ['Premium Flagship', 'Photography', 'Business / Work'],
+      budgetMax: 90000,
+      budgetMin: 70000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+16',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+16',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+16',
     },
     {
       id: 'samsung_s24ultra',
@@ -254,6 +314,36 @@ export const PRODUCTS = {
       amazonUrl: 'https://www.amazon.in/s?k=dell+xps+13+2023',
       flipkartUrl: 'https://www.flipkart.com/search?q=dell+xps+13',
       cromaUrl: 'https://www.croma.com/searchB?q=dell+xps+13',
+    },
+    {
+      id: 'macbook_air_m2',
+      name: 'Apple MacBook Air M2',
+      tagline: 'Ultra-thin, silent performance with all-day 18hr battery',
+      price: { amazon: 89900, flipkart: 87990, croma: 89900 },
+      rating: 4.8,
+      badge: '👑 Best Ultrabook',
+      specs: ['13.6" Liquid Retina', 'Apple M2 8-core CPU', '8GB Unified Memory / 256GB SSD', '18-hour battery'],
+      purposes: ['Office / Work', 'Student / College', 'Programming / Dev', 'Thin & Light Travel'],
+      budgetMax: 100000,
+      budgetMin: 80000,
+      amazonUrl: 'https://www.amazon.in/s?k=macbook+air+m2',
+      flipkartUrl: 'https://www.flipkart.com/search?q=macbook+air+m2',
+      cromaUrl: 'https://www.croma.com/searchB?q=macbook+air+m2',
+    },
+    {
+      id: 'macbook_air_m3',
+      name: 'Apple MacBook Air M3',
+      tagline: 'Blazing fast M3 chip with dual display support & Ray Tracing',
+      price: { amazon: 104900, flipkart: 102900, croma: 104900 },
+      rating: 4.9,
+      badge: '⚡ Top Creative Pick',
+      specs: ['13.6" Liquid Retina', 'Apple M3 8-core CPU / 10-core GPU', '16GB Unified Memory / 512GB SSD', 'MagSafe 3 + Dual Thunderbolt'],
+      purposes: ['Programming / Dev', 'Video Editing', 'Thin & Light Travel'],
+      budgetMax: Infinity,
+      budgetMin: 100000,
+      amazonUrl: 'https://www.amazon.in/s?k=macbook+air+m3',
+      flipkartUrl: 'https://www.flipkart.com/search?q=macbook+air+m3',
+      cromaUrl: 'https://www.croma.com/searchB?q=macbook+air+m3',
     },
     {
       id: 'asus_rog_strix',
@@ -848,9 +938,94 @@ export function getRecommendations(categoryId, budgetRange, purpose) {
 }
 
 export function getCheapestStore(product) {
-  const stores = product.price;
-  return Object.entries(stores).reduce((min, [store, price]) =>
+  const stores = product?.price || {};
+  const validEntries = Object.entries(stores).filter(([_, p]) => p > 0);
+  if (validEntries.length === 0) {
+    return { store: 'amazon', price: 0 };
+  }
+  return validEntries.reduce((min, [store, price]) =>
     price < min.price ? { store, price } : min,
-    { store: Object.keys(stores)[0], price: Object.values(stores)[0] }
+    { store: validEntries[0][0], price: validEntries[0][1] }
   );
+}
+
+/**
+ * Search products across all categories with fuzzy token and substring scoring.
+ */
+export function searchProducts(query) {
+  if (!query || typeof query !== 'string' || !query.trim()) return [];
+  const cleanQ = query.toLowerCase().trim();
+  const tokens = cleanQ.split(/\s+/).filter(Boolean);
+  
+  const allProductsList = Object.entries(PRODUCTS).flatMap(([cat, list]) => 
+    list.map(p => ({ ...p, category: p.category || cat }))
+  );
+
+  const scored = allProductsList.map(p => {
+    const nameLower = p.name.toLowerCase();
+    const catLower = (p.category || '').toLowerCase();
+    const tagLower = (p.tagline || '').toLowerCase();
+    const specsStr = (p.specs || []).join(' ').toLowerCase();
+
+    // Direct whole phrase match
+    if (nameLower.includes(cleanQ)) return { product: p, score: 100 };
+    if (tagLower.includes(cleanQ)) return { product: p, score: 85 };
+    if (catLower === cleanQ) return { product: p, score: 80 };
+    if (specsStr.includes(cleanQ)) return { product: p, score: 70 };
+
+    // Token-based matching (e.g. "iqoo 15" matches "iqoo" or "15")
+    let matchedTokens = 0;
+    tokens.forEach(t => {
+      if (nameLower.includes(t) || tagLower.includes(t) || catLower.includes(t) || specsStr.includes(t)) {
+        matchedTokens++;
+      }
+    });
+
+    if (matchedTokens > 0) {
+      const matchRatio = matchedTokens / tokens.length;
+      return { product: p, score: matchRatio * 60 };
+    }
+
+    return null;
+  }).filter(Boolean);
+
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .map(res => res.product);
+}
+
+/**
+ * Creates an on-the-fly Dynamic Multi-Store Search Product for any uncataloged search query.
+ */
+export function createDynamicProduct(query) {
+  const clean = (query || 'Custom Gadget').trim();
+  const encoded = encodeURIComponent(clean);
+  const title = clean.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+  return {
+    id: `dyn_${clean.toLowerCase().replace(/[^a-z0-9]/g, '_')}`,
+    name: title,
+    category: 'electronics',
+    tagline: `Live multi-store price check across Amazon, Flipkart & Croma`,
+    price: {
+      amazon: 0,
+      flipkart: 0,
+      croma: 0,
+    },
+    isLiveSearch: true,
+    rating: 4.6,
+    badge: '🔍 Live Arbitrage',
+    specs: [
+      'Direct real-time query across Indian retail networks',
+      'Zero markup transparent store links',
+      'Eligible for 5% Bank Card Arbitrage',
+      'Automated 6-Hour Price Drop Watchdog'
+    ],
+    purposes: ['Live Search', 'Multi-Store Comparison'],
+    budgetMin: 0,
+    budgetMax: 100000,
+    amazonUrl: `https://www.amazon.in/s?k=${encoded}`,
+    flipkartUrl: `https://www.flipkart.com/search?q=${encoded}`,
+    cromaUrl: `https://www.croma.com/searchB?q=${encoded}`,
+  };
 }

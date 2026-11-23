@@ -1,17 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 /**
  * Traps keyboard focus within an active modal container (WCAG 2.1 AA / AAA standard).
  * Restores focus to the triggering element upon closure.
  */
 export function useFocusTrap(containerRef, isActive, onClose) {
-  const previousActiveElementRef = useRef(null);
-
   useEffect(() => {
     if (!isActive) return;
 
     // Save current active element
-    previousActiveElementRef.current = document.activeElement;
+    const previousActiveElement = document.activeElement;
 
     const container = containerRef.current;
     if (!container) return;
@@ -76,8 +74,8 @@ export function useFocusTrap(containerRef, isActive, onClose) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       // Restore focus on cleanup
-      if (previousActiveElementRef.current && typeof previousActiveElementRef.current.focus === 'function') {
-        previousActiveElementRef.current.focus();
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus();
       }
     };
   }, [containerRef, isActive, onClose]);
