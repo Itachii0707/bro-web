@@ -59,6 +59,15 @@ export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSel
     product: createDynamicProduct(query)
   } : null;
 
+  const searchShopAction = cleanQ ? {
+    type: 'search_shop',
+    title: `Search "${query.trim()}" in Electronics Radar`,
+    subtitle: productMatches.length > 0 
+      ? `View all ${productMatches.length} matching models across Amazon, Flipkart & Croma`
+      : `Search all categories and stores for "${query.trim()}"`,
+    query: query.trim()
+  } : null;
+
   const askAiItem = cleanQ ? {
     type: 'ask_ai',
     title: `Ask AI Advisor about "${query.trim()}"`,
@@ -77,6 +86,7 @@ export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSel
   });
 
   const allItems = [
+    ...(searchShopAction ? [searchShopAction] : []),
     ...productMatches.map(p => ({ type: 'product', data: p })),
     ...(dynamicItem ? [dynamicItem] : []),
     ...(askAiItem ? [askAiItem] : []),
@@ -87,7 +97,10 @@ export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSel
   const handleSelect = (item) => {
     playHapticClick();
     if (!item) return;
-    if (item.type === 'product') {
+    if (item.type === 'search_shop') {
+      onSelectTab('shop', item.query);
+      onClose();
+    } else if (item.type === 'product') {
       onSelectProduct(item.data);
       onClose();
     } else if (item.type === 'dynamic_search') {
@@ -170,6 +183,39 @@ export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSel
           ) : (
             allItems.map((item, idx) => {
               const isSelected = idx === selectedIndex;
+
+              if (item.type === 'search_shop') {
+                return (
+                  <button
+                    key={`search-shop-${idx}`}
+                    onClick={() => handleSelect(item)}
+                    onMouseEnter={() => setSelectedIndex(idx)}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-colors ${
+                      isSelected ? 'bg-[#333333] text-white shadow-xs' : 'hover:bg-[#F8F9FA] text-[#333333]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`p-1.5 rounded-lg flex-shrink-0 ${
+                        isSelected ? 'bg-white/20 text-white' : 'bg-[#FFF8D9] text-[#b59a50]'
+                      }`}>
+                        <Search className="w-3.5 h-3.5" />
+                      </span>
+                      <div className="truncate">
+                        <span className="font-bold block truncate">{item.title}</span>
+                        <span className={`text-[10px] ${isSelected ? 'text-white/80' : 'text-[#666666]'}`}>
+                          {item.subtitle}
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 flex-shrink-0 ${
+                      isSelected ? 'bg-white text-[#333333]' : 'bg-[#F3FBEF] text-[#008738] border border-[#008738]/30'
+                    }`}>
+                      <span>Radar View</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </button>
+                );
+              }
 
               if (item.type === 'product') {
                 const p = item.data;

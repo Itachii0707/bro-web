@@ -43,6 +43,7 @@ export const PURPOSES = {
 };
 
 export const BUDGET_RANGES = [
+  { label: 'All Budgets', min: 0, max: Infinity },
   { label: 'Under ₹500', min: 0, max: 500 },
   { label: '₹500 – ₹1,000', min: 500, max: 1000 },
   { label: '₹1,000 – ₹2,000', min: 1000, max: 2000 },
@@ -193,13 +194,43 @@ export const PRODUCTS = {
       cromaUrl: 'https://www.croma.com/searchB?q=oneplus+12r',
     },
     {
+      id: 'iphone13',
+      name: 'iPhone 13',
+      tagline: 'Best value iPhone in India under ₹50K with incredible battery',
+      price: { amazon: 49999, flipkart: 48999, croma: 51999 },
+      rating: 4.7,
+      badge: '🔥 Value Apple Pick',
+      specs: ['6.1" Super Retina XDR', 'A15 Bionic chip', '12MP Dual Cameras with Cinematic Mode', 'All-Day Battery Life'],
+      purposes: ['Daily Use / Budget', 'Photography', 'Premium Flagship'],
+      budgetMax: 60000,
+      budgetMin: 40000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+13',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+13',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+13',
+    },
+    {
+      id: 'iphone14',
+      name: 'iPhone 14',
+      tagline: 'Reliable iOS performer with Crash Detection and Photonic Engine',
+      price: { amazon: 58999, flipkart: 57999, croma: 59999 },
+      rating: 4.7,
+      badge: '⭐ Popular iOS',
+      specs: ['6.1" Super Retina XDR', 'A15 Bionic (5-core GPU)', 'Photonic Engine + Action Mode', 'Crash Detection'],
+      purposes: ['Premium Flagship', 'Photography', 'Daily Use / Budget'],
+      budgetMax: 70000,
+      budgetMin: 50000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+14',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+14',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+14',
+    },
+    {
       id: 'iphone15',
       name: 'iPhone 15',
-      tagline: 'Premium flagship — best iOS experience',
+      tagline: 'Dynamic Island, 48MP main camera & USB-C connectivity',
       price: { amazon: 69999, flipkart: 67999, croma: 71999 },
       rating: 4.8,
-      badge: '👑 Premium',
-      specs: ['6.1" Super Retina XDR', 'A16 Bionic', '48MP Main + 12MP Ultra Wide', 'USB-C finally!'],
+      badge: '👑 Premium Flagship',
+      specs: ['6.1" Super Retina XDR with Dynamic Island', 'A16 Bionic', '48MP Main + 2x Telephoto', 'USB-C Universal Charging'],
       purposes: ['Premium Flagship', 'Photography', 'Business / Work'],
       budgetMax: 80000,
       budgetMin: 60000,
@@ -208,19 +239,94 @@ export const PRODUCTS = {
       cromaUrl: 'https://www.croma.com/searchB?q=iphone+15',
     },
     {
+      id: 'iphone15pro',
+      name: 'iPhone 15 Pro',
+      tagline: 'Grade 5 Titanium design, A17 Pro 3nm chip and Action Button',
+      price: { amazon: 114999, flipkart: 109999, croma: 119999 },
+      rating: 4.9,
+      badge: '⚡ Pro Titanium',
+      specs: ['6.1" 120Hz ProMotion Super Retina XDR', 'A17 Pro (Console Gaming)', '48MP Pro Camera + 3x Zoom', 'Titanium Build + Action Button'],
+      purposes: ['Premium Flagship', 'Gaming', 'Photography', 'Business / Work'],
+      budgetMax: 140000,
+      budgetMin: 80000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+15+pro',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+15+pro',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+15+pro',
+    },
+    {
       id: 'iphone16',
       name: 'iPhone 16',
-      tagline: 'Next-gen flagship with A18 chip and Camera Control',
+      tagline: 'Built for Apple Intelligence with A18 chip and dedicated Camera Control',
       price: { amazon: 79900, flipkart: 78900, croma: 79900 },
       rating: 4.9,
       badge: '✨ Latest Generation',
-      specs: ['6.1" Super Retina XDR', 'A18 Bionic + Apple Intelligence', '48MP Fusion Camera', 'Camera Control button'],
+      specs: ['6.1" Super Retina XDR', 'A18 Bionic + Apple Intelligence', '48MP Fusion Camera + Macro', 'Camera Control Button'],
       purposes: ['Premium Flagship', 'Photography', 'Business / Work'],
       budgetMax: 90000,
       budgetMin: 70000,
       amazonUrl: 'https://www.amazon.in/s?k=iphone+16',
       flipkartUrl: 'https://www.flipkart.com/search?q=iphone+16',
       cromaUrl: 'https://www.croma.com/searchB?q=iphone+16',
+    },
+    {
+      id: 'iphone16pro',
+      name: 'iPhone 16 Pro',
+      tagline: 'Larger 6.3" ProMotion display, A18 Pro chip, 5x telephoto camera',
+      price: { amazon: 119900, flipkart: 118900, croma: 119900 },
+      rating: 4.9,
+      badge: '👑 Pro Masterpiece',
+      specs: ['6.3" 120Hz ProMotion XDR Display', 'A18 Pro (Ray Tracing)', '48MP Fusion + 5x Telephoto Zoom', 'Studio-Quality 4-Mic Array'],
+      purposes: ['Premium Flagship', 'Photography', 'Gaming', 'Business / Work'],
+      budgetMax: 150000,
+      budgetMin: 80000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+16+pro',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+16+pro',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+16+pro',
+    },
+    {
+      id: 'iphone16promax',
+      name: 'iPhone 16 Pro Max',
+      tagline: 'Ultimate 6.9" Super Retina XDR, longest iPhone battery life ever',
+      price: { amazon: 144900, flipkart: 142900, croma: 144900 },
+      rating: 5.0,
+      badge: '👑 Ultimate Flagship',
+      specs: ['6.9" 120Hz ProMotion XDR (Largest Ever)', 'A18 Pro chip with 6-core GPU', '5x Optical Zoom 120mm', 'Best Battery Life on any iPhone'],
+      purposes: ['Premium Flagship', 'Photography', 'Gaming', 'Business / Work'],
+      budgetMax: 200000,
+      budgetMin: 120000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+16+pro+max',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+16+pro+max',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+16+pro+max',
+    },
+    {
+      id: 'samsung_s23',
+      name: 'Samsung Galaxy S23 5G',
+      tagline: 'Compact powerhouse flagship with Snapdragon 8 Gen 2 under ₹45K',
+      price: { amazon: 44999, flipkart: 43999, croma: 46999 },
+      rating: 4.8,
+      badge: '🔥 Compact Flagship',
+      specs: ['6.1" Dynamic AMOLED 2X 120Hz', 'Snapdragon 8 Gen 2 Mobile Platform', '50MP OIS + 3x Optical Telephoto', 'IP68 Water Resistance'],
+      purposes: ['Premium Flagship', 'Photography', 'Daily Use / Budget'],
+      budgetMax: 50000,
+      budgetMin: 35000,
+      amazonUrl: 'https://www.amazon.in/s?k=samsung+galaxy+s23',
+      flipkartUrl: 'https://www.flipkart.com/search?q=samsung+galaxy+s23',
+      cromaUrl: 'https://www.croma.com/searchB?q=samsung+galaxy+s23',
+    },
+    {
+      id: 'oneplus_12',
+      name: 'OnePlus 12 5G',
+      tagline: 'Top-tier flagship with 2K 120Hz ProXDR and 5400mAh battery',
+      price: { amazon: 61999, flipkart: 59999, croma: 62999 },
+      rating: 4.8,
+      badge: '⚡ Flagship Powerhouse',
+      specs: ['6.82" 2K 120Hz ProXDR Display', 'Snapdragon 8 Gen 3', 'Hasselblad 4th Gen Cameras', '5400mAh + 100W SUPERVOOC'],
+      purposes: ['Premium Flagship', 'Gaming', 'Photography', 'Business / Work'],
+      budgetMax: 70000,
+      budgetMin: 55000,
+      amazonUrl: 'https://www.amazon.in/s?k=oneplus+12',
+      flipkartUrl: 'https://www.flipkart.com/search?q=oneplus+12',
+      cromaUrl: 'https://www.croma.com/searchB?q=oneplus+12',
     },
     {
       id: 'samsung_s24ultra',
@@ -250,10 +356,25 @@ export const PRODUCTS = {
       specs: ['15.6" FHD IPS', 'AMD Ryzen 5 5500U', '8GB RAM / 512GB SSD', 'Up to 8 hrs battery'],
       purposes: ['Student / College', 'Office / Work'],
       budgetMax: 35000,
-      budgetMin: 25000,
+      budgetMin: 20000,
       amazonUrl: 'https://www.amazon.in/s?k=acer+aspire+lite+ryzen+5',
       flipkartUrl: 'https://www.flipkart.com/search?q=acer+aspire+lite',
       cromaUrl: 'https://www.croma.com/searchB?q=acer+aspire+lite',
+    },
+    {
+      id: 'acer_aspire_5_gaming',
+      name: 'Acer Aspire 5 Gaming',
+      tagline: 'Best budget gaming laptop with RTX 2050 under ₹40K',
+      price: { amazon: 39999, flipkart: 38999, croma: 41999 },
+      rating: 4.3,
+      badge: '🎮 Budget Gaming',
+      specs: ['15.6" FHD 144Hz IPS', 'Intel Core i5-12450H', 'RTX 2050 4GB Graphics', '16GB RAM / 512GB SSD'],
+      purposes: ['Gaming', 'Student / College', 'Video Editing'],
+      budgetMax: 45000,
+      budgetMin: 20000,
+      amazonUrl: 'https://www.amazon.in/s?k=acer+aspire+5+gaming+rtx+2050',
+      flipkartUrl: 'https://www.flipkart.com/search?q=acer+aspire+5+gaming',
+      cromaUrl: 'https://www.croma.com/searchB?q=acer+aspire+5+gaming',
     },
     {
       id: 'hp_15s',
@@ -265,10 +386,25 @@ export const PRODUCTS = {
       specs: ['15.6" FHD Anti-Glare', 'Intel Core i5-1235U', '8GB RAM / 512GB SSD', 'HP Fast Charge'],
       purposes: ['Student / College', 'Office / Work', 'Programming / Dev'],
       budgetMax: 45000,
-      budgetMin: 30000,
+      budgetMin: 25000,
       amazonUrl: 'https://www.amazon.in/s?k=hp+15s+core+i5',
       flipkartUrl: 'https://www.flipkart.com/search?q=hp+15s+i5',
       cromaUrl: 'https://www.croma.com/searchB?q=hp+15s',
+    },
+    {
+      id: 'hp_victus_15',
+      name: 'HP Victus 15',
+      tagline: 'High-performance gaming laptop with 144Hz display',
+      price: { amazon: 49999, flipkart: 48999, croma: 51999 },
+      rating: 4.4,
+      badge: '🔥 Gaming Champ',
+      specs: ['15.6" 144Hz FHD Display', 'AMD Ryzen 5 5600H', 'NVIDIA GeForce RTX 3050 4GB', '16GB RAM / 512GB SSD'],
+      purposes: ['Gaming', 'Programming / Dev', 'Video Editing'],
+      budgetMax: 65000,
+      budgetMin: 40000,
+      amazonUrl: 'https://www.amazon.in/s?k=hp+victus+15+ryzen+5',
+      flipkartUrl: 'https://www.flipkart.com/search?q=hp+victus+15',
+      cromaUrl: 'https://www.croma.com/searchB?q=hp+victus+15',
     },
     {
       id: 'asus_vivobook_14',
@@ -925,13 +1061,14 @@ export const PRODUCTS = {
 export function getRecommendations(categoryId, budgetRange, purpose) {
   const products = PRODUCTS[categoryId] || [];
   return products.filter(p => {
-    const inBudget = p.budgetMin <= budgetRange.max && p.budgetMax >= budgetRange.min;
-    const matchesPurpose = !purpose || p.purposes.includes(purpose);
+    const isAllBudget = !budgetRange || budgetRange.label === 'All Budgets' || (budgetRange.min === 0 && budgetRange.max === Infinity);
+    const inBudget = isAllBudget || (p.budgetMin <= budgetRange.max && p.budgetMax >= budgetRange.min);
+    const matchesPurpose = !purpose || (p.purposes && p.purposes.includes(purpose));
     return inBudget && matchesPurpose;
   }).sort((a, b) => {
     // Sort by: purpose match first, then rating
-    const aMatch = a.purposes.includes(purpose) ? 1 : 0;
-    const bMatch = b.purposes.includes(purpose) ? 1 : 0;
+    const aMatch = purpose && a.purposes && a.purposes.includes(purpose) ? 1 : 0;
+    const bMatch = purpose && b.purposes && b.purposes.includes(purpose) ? 1 : 0;
     if (bMatch !== aMatch) return bMatch - aMatch;
     return b.rating - a.rating;
   });
@@ -968,12 +1105,14 @@ export function searchProducts(query) {
     const specsStr = (p.specs || []).join(' ').toLowerCase();
 
     // Direct whole phrase match
+    if (nameLower === cleanQ) return { product: p, score: 160 };
+    if (nameLower.startsWith(cleanQ)) return { product: p, score: 140 };
     if (nameLower.includes(cleanQ)) return { product: p, score: 100 };
     if (tagLower.includes(cleanQ)) return { product: p, score: 85 };
     if (catLower === cleanQ) return { product: p, score: 80 };
     if (specsStr.includes(cleanQ)) return { product: p, score: 70 };
 
-    // Token-based matching (e.g. "iqoo 15" matches "iqoo" or "15")
+    // Token-based matching (e.g. "iphone 16 pro" matches tokens)
     let matchedTokens = 0;
     tokens.forEach(t => {
       if (nameLower.includes(t) || tagLower.includes(t) || catLower.includes(t) || specsStr.includes(t)) {
@@ -990,7 +1129,10 @@ export function searchProducts(query) {
   }).filter(Boolean);
 
   return scored
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.product.rating - a.product.rating;
+    })
     .map(res => res.product);
 }
 

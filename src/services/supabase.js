@@ -30,11 +30,11 @@ export async function fetchProducts({ categoryId, budgetRange, purpose } = {}) {
     if (categoryId) {
       query = query.eq('category', categoryId);
     }
-    if (budgetRange) {
+    if (budgetRange && budgetRange.label !== 'All Budgets') {
       if (budgetRange.max !== undefined && budgetRange.max !== Infinity) {
         query = query.lte('budget_min', budgetRange.max);
       }
-      if (budgetRange.min !== undefined) {
+      if (budgetRange.min !== undefined && budgetRange.min > 0) {
         query = query.gte('budget_max', budgetRange.min);
       }
     }

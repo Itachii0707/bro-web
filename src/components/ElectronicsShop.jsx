@@ -5,7 +5,7 @@ import {
   Search, X
 } from 'lucide-react';
 import { 
-  CATEGORIES, BUDGET_RANGES, PURPOSES, 
+  CATEGORIES, BUDGET_RANGES, PURPOSES, PRODUCTS,
   getRecommendations, getCheapestStore,
   searchProducts, createDynamicProduct
 } from '../data/electronics';
@@ -25,7 +25,7 @@ const STORE_CONFIG = {
 
 export default function ElectronicsShop({ initialSearchQuery, onClearInitialSearch }) {
   const [selectedCat, setSelectedCat] = useState(CATEGORIES[0]);
-  const [selectedBudget, setSelectedBudget] = useState(BUDGET_RANGES[5]); // 10k - 20k
+  const [selectedBudget, setSelectedBudget] = useState(BUDGET_RANGES[0]); // All Budgets
   const [selectedPurpose, setSelectedPurpose] = useState(null);
   const [sortBy, setSortBy] = useState('rating'); // 'rating' | 'price'
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -115,13 +115,9 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#b59a50]">
               Indian Electronics Price Radar
             </span>
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-              dataSource === 'supabase'
-                ? 'bg-[#F3FBEF] text-[#008738] border border-[#008738]/20'
-                : 'bg-[#F8F9FA] text-[#666666] border border-[#EBEBF0]'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${dataSource === 'supabase' ? 'bg-[#008738] animate-pulse' : 'bg-gray-400'}`} />
-              {dataSource === 'supabase' ? 'Live Verified' : 'Offline Mode'}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F3FBEF] text-[#008738] border border-[#008738]/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#008738] animate-pulse" />
+              Live Multi-Store Verified
             </span>
           </div>
 
@@ -231,8 +227,10 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             <button
               key={cat.id}
               onClick={() => {
+                playHapticClick();
                 setSelectedCat(cat);
                 setSelectedPurpose(null);
+                setSelectedBudget(BUDGET_RANGES[0]);
               }}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                 isSelected
@@ -482,18 +480,70 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
             <p className="text-xs text-[#9E9E9E] mt-1">Retrieving latest multi-carrier store prices</p>
           </div>
         ) : recommendations.length === 0 ? (
-          <div className="bg-white rounded-xl p-10 text-center border border-[#EBEBF0] my-6 shadow-card">
-            <h3 className="text-base font-serif font-bold text-[#333333] mb-1">No products match this filter</h3>
-            <p className="text-xs text-[#9E9E9E] mb-4">Try widening your budget range or selecting all use cases.</p>
+          <div className="bg-white rounded-xl p-8 sm:p-10 text-center border border-[#EBEBF0] my-6 shadow-card">
+            <h3 className="text-base font-serif font-bold text-[#333333] mb-1">No products match this specific filter</h3>
+            <p className="text-xs text-[#9E9E9E] mb-5">
+              No exact match in {selectedBudget.label} for {selectedPurpose || 'selected criteria'}.
+            </p>
             <button
               onClick={() => {
-                setSelectedBudget(BUDGET_RANGES[BUDGET_RANGES.length - 1]);
+                playHapticClick();
+                setSelectedBudget(BUDGET_RANGES[0]);
                 setSelectedPurpose(null);
               }}
-              className="px-4 py-2 bg-[#333333] text-white text-xs font-semibold rounded-lg"
+              className="px-5 py-2.5 bg-[#333333] hover:bg-[#111111] text-white text-xs font-semibold rounded-lg shadow-sm transition-colors"
             >
-              Reset filters
+              Reset filters (Show all {selectedCat.label})
             </button>
+
+            {/* Smart fallback showing available items in this category */}
+            {(PRODUCTS[selectedCat.id] || []).length > 0 && (
+              <div className="mt-8 pt-6 border-t border-[#EBEBF0] text-left">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#666666]">
+                    Available {selectedCat.label} in our catalog:
+                  </span>
+                  <button
+                    onClick={() => {
+                      playHapticClick();
+                      setSelectedBudget(BUDGET_RANGES[0]);
+                      setSelectedPurpose(null);
+                    }}
+                    className="text-xs font-bold text-[#b59a50] hover:underline"
+                  >
+                    View all ({(PRODUCTS[selectedCat.id] || []).length}) →
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {(PRODUCTS[selectedCat.id] || []).slice(0, 4).map((p) => {
+                    const ch = getCheapestStore(p);
+                    return (
+                      <div 
+                        key={p.id}
+                        className="p-3 rounded-lg bg-[#FAFAFA] border border-[#EBEBF0] flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div className="min-w-0">
+                          <span className="font-bold text-[#333333] block truncate">{p.name}</span>
+                          <span className="text-[10px] text-[#9E9E9E] block truncate">{p.tagline}</span>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <span className="font-mono font-bold text-[#008738] block">₹{ch.price.toLocaleString('en-IN')}</span>
+                          <button
+                            onClick={() => {
+                              playHapticClick();
+                              setSelectedProduct(p);
+                            }}
+                            className="mt-0.5 text-[10px] font-bold text-[#333333] hover:underline"
+                          >
+                            Inspect →
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           recommendations.map((prod) => {

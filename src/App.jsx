@@ -246,9 +246,8 @@ export default function App() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onClick={() => setPaletteOpen(true)}
-                    placeholder="Search any gadget, model (e.g. iQOO 15), or route... (Press ⌘K)"
-                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#EBEBF0] rounded-lg text-xs text-[#333333] placeholder:text-[#9E9E9E] focus:outline-none focus:border-[#333333] focus:ring-1 focus:ring-[#333333] transition-colors shadow-sm cursor-pointer"
+                    placeholder="Search any gadget, model (e.g. iPhone 16, iQOO 15), or route... (Press Enter or ⌘K)"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#EBEBF0] rounded-lg text-xs text-[#333333] placeholder:text-[#9E9E9E] focus:outline-none focus:border-[#333333] focus:ring-1 focus:ring-[#333333] transition-colors shadow-sm"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         if (searchQuery.trim()) {

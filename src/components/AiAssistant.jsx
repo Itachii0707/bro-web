@@ -123,14 +123,17 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
     const isGadgetQuery = gadgetKeywords.some(k => lower.includes(k));
 
     if (isGadgetQuery) {
+      const exactMatches = searchProducts(userPrompt);
       const dynamicProd = createDynamicProduct(userPrompt);
-      const relatedProducts = searchProducts(lower.includes('iqoo') ? 'iqoo' : (lower.includes('pixel') ? 'pixel' : (lower.includes('oneplus') ? 'oneplus' : (lower.includes('iphone') ? 'iphone' : 'phone')))).slice(0, 2);
+      const productsToShow = exactMatches.length > 0 
+        ? exactMatches.slice(0, 3) 
+        : [dynamicProd, ...searchProducts(lower.split(' ')[0]).slice(0, 2)];
 
       const aiMsg = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: `Here is the live price verification link for **"${userPrompt}"** across Amazon, Flipkart, and Croma with 0% markup, alongside current top-rated choices:`,
-        products: [dynamicProd, ...relatedProducts],
+        text: `Here is the verified hardware intelligence and multi-store pricing for **"${userPrompt}"** across Amazon, Flipkart, and Croma:`,
+        products: productsToShow,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, aiMsg]);
