@@ -88,19 +88,16 @@ Go to your repository on GitHub: [Settings -> Secrets and variables -> Actions](
 
 ---
 
-## Phase 4: Supabase Cloud Database Compaction Migration
+## Phase 4: Supabase Cloud Database Compaction Migration (100% Complete)
 
-To ensure your Supabase database never exceeds 500 MB:
+The compaction database structures have been executed and verified directly on the live Supabase PostgreSQL database (`vfhrgbyvyyxeylcuqcwf`):
 
-1. Log into your [Supabase Dashboard](https://supabase.com/dashboard).
-2. Open your project -> Navigate to the **SQL Editor** in the left sidebar.
-3. Open [`scripts/compaction_migration.sql`](file:///d:/Projects/bro-web/scripts/compaction_migration.sql) from your project folder.
-4. Paste the entire SQL script into the Supabase SQL Editor and click **Run**.
-5. **What this accomplishes:**
-   - Creates the `price_history_daily` table.
-   - Installs the `compact_old_price_history(90)` procedure.
-   - Enforces automatic downsampling of records older than 90 days.
-   - Guarantees your database stays below 30 MB indefinitely.
+- [x] Created `public.price_history_daily` table with primary keys and foreign key constraints
+- [x] Created descending index `idx_price_history_daily_product_day`
+- [x] Enabled Row Level Security (RLS) and public read policy
+- [x] Verified via live query — storage is clean and stays below 30 MB (within 500 MB quota)
+- [x] Automated compaction runner `scripts/compact.js` tested and integrated into GitHub Actions
+
 
 ---
 
