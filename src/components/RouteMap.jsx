@@ -166,8 +166,8 @@ export default function RouteMap({ origin, destination, polylinePoints = [], dis
             Dropoff (B)
           </span>
         </div>
-        <span className="text-[10px] text-gray-400">
-          OpenStreetMap & OSRM Engine · $0.00 Cost
+        <span className="text-[10px] text-gray-400 font-medium">
+          Live Road Geometry & ETA
         </span>
       </div>
     </div>

@@ -80,9 +80,13 @@ export default function RidesPage() {
 
   const handleRouteSelect = (route) => {
     setManualOverride(false);
-    const cityLandmarks = CITY_LANDMARKS[city] || {};
-    const fromL = cityLandmarks[route.from] || { lat: 12.9352, lon: 77.6245 };
-    const toL = cityLandmarks[route.to] || { lat: 13.1986, lon: 77.7064 };
+    const cityLandmarks = CITY_LANDMARKS[city] || CITY_LANDMARKS['Bangalore'];
+    const landmarkKeys = Object.keys(cityLandmarks);
+    const defaultA = cityLandmarks[landmarkKeys[0]] || { lat: 12.9352, lon: 77.6245 };
+    const defaultB = cityLandmarks[landmarkKeys[1] || landmarkKeys[0]] || { lat: 13.1986, lon: 77.7064 };
+
+    const fromL = cityLandmarks[route.from] || defaultA;
+    const toL = cityLandmarks[route.to] || defaultB;
 
     setFromPoint({
       name: route.from,
@@ -100,13 +104,11 @@ export default function RidesPage() {
   const handleCityChange = (newCity) => {
     setCity(newCity);
     setManualOverride(false);
-    const landmarks = CITY_LANDMARKS[newCity];
-    if (landmarks) {
-      const keys = Object.keys(landmarks);
-      if (keys.length >= 2) {
-        setFromPoint({ name: keys[1], lat: landmarks[keys[1]].lat, lon: landmarks[keys[1]].lon });
-        setToPoint({ name: keys[0], lat: landmarks[keys[0]].lat, lon: landmarks[keys[0]].lon });
-      }
+    const landmarks = CITY_LANDMARKS[newCity] || CITY_LANDMARKS['Bangalore'];
+    const keys = Object.keys(landmarks);
+    if (keys.length >= 2) {
+      setFromPoint({ name: keys[1], lat: landmarks[keys[1]].lat, lon: landmarks[keys[1]].lon });
+      setToPoint({ name: keys[0], lat: landmarks[keys[0]].lat, lon: landmarks[keys[0]].lon });
     }
   };
 
@@ -140,13 +142,13 @@ export default function RidesPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-5 border-b border-[#EBEBF0]">
         <div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[#b59a50] block mb-1">
-            Real-Time Mobility Matrix & ONDC Direct
+            Live Cab & Auto Price Radar
           </span>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#333333]">
-            Cab & Auto Fare Comparison
+            Cab & Auto Fare Radar
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-1 font-sans">
-            Independent price and door-to-door ETA comparison across Uber, Rapido, Ola, Namma Yatri (ONDC), and BlueSmart.
+            Real-time door-to-door fare and ETA comparison across Uber, Rapido, Ola, and Namma Yatri with zero commission markup.
           </p>
         </div>
 

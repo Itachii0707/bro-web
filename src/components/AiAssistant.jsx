@@ -15,19 +15,28 @@ const SAMPLE_PROMPTS = [
   { icon: '💻', label: 'Laptop for programming under ₹45k', query: 'programming laptop under 45000' },
 ];
 
-export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
+export default function AiAssistant({ onSelectCategory, onNavigateRides, initialPrompt, onClearInitialPrompt }) {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState([
     {
       id: 'init-1',
       role: 'assistant',
-      text: "Yo! I'm **BRO AI**, your autonomous electronics advisor & mobility engine. Ask me anything like *'Find a durable braided cable under ₹500'* or *'Cheapest ride from Indiranagar to Whitefield'*. What are we finding today?",
+      text: "Hey! I'm **BRO AI**, your smart price and city transit copilot. Ask me anything like *'Find a durable braided cable under ₹500'* or *'Cheapest ride to Bangalore Airport'*. What are we finding today?",
       timestamp: 'Just now',
     }
   ]);
   const [isThinking, setIsThinking] = useState(false);
   const [thoughtSteps, setThoughtSteps] = useState([]);
   const chatEndRef = useRef(null);
+  const lastHandledPromptRef = useRef(null);
+
+  useEffect(() => {
+    if (initialPrompt && initialPrompt.trim() && lastHandledPromptRef.current !== initialPrompt) {
+      lastHandledPromptRef.current = initialPrompt;
+      handleSend(initialPrompt);
+      if (onClearInitialPrompt) onClearInitialPrompt();
+    }
+  }, [initialPrompt]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -173,7 +182,7 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
     const aiMsg = {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      text: `Based on your constraint matrix (Target: **${targetCategory.toUpperCase()}**, Budget ceiling: **₹${budgetMax.toLocaleString('en-IN')}**), here are the highest-rated devices with validated live price discrepancies:`,
+      text: `Based on your preferences (Target: **${targetCategory.toUpperCase()}**, Budget ceiling: **₹${budgetMax.toLocaleString('en-IN')}**), here are the top-rated recommendations with verified live retailer prices:`,
       products: topPicks,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -192,14 +201,14 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
           </div>
           <div>
             <span className="text-xs font-mono tracking-wider text-emerald-400 font-semibold uppercase">
-              BRO-NEURAL ENGINE ACTIVE
+              BRO SHOPPING & RIDE COPILOT
             </span>
-            <p className="text-[11px] text-slate-400">Zero-latency specs matching & multi-carrier pricing telemetry</p>
+            <p className="text-[11px] text-slate-400">Live multi-store price check & cab fare estimation</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-1 rounded-full text-[11px] font-mono bg-white/5 text-slate-300 border border-white/10">
-            Model: TOPSIS-MCDM + Llama 3.3
+            Real-Time Verified
           </span>
         </div>
       </div>
@@ -278,7 +287,7 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
                   <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
                     <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                       <Car className="w-3.5 h-3.5 text-emerald-400" />
-                      {m.rideData.distance} km Commute Matrix ({m.rideData.city})
+                      {m.rideData.distance} km Commute Estimate ({m.rideData.city})
                     </span>
                     <button 
                       onClick={onNavigateRides}
@@ -400,8 +409,8 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides }) {
             </button>
           </div>
         </form>
-        <p className="text-[11px] text-center text-slate-500 mt-2 font-mono">
-          Powered by Open Data & Pareto Multi-Criteria Decision Framework • 100% Free
+        <p className="text-[11px] text-center text-slate-500 mt-2 font-sans">
+          Direct retailer checkouts & cab app deeplinks · 0% commission
         </p>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Search, ArrowRight, ExternalLink, Star, 
   MapPin, Check, SlidersHorizontal, ArrowUpRight, ShieldCheck, Sparkles, Bell
@@ -11,6 +11,7 @@ import ProductDetailModal from './components/ProductDetailModal';
 import RideDispatchModal from './components/RideDispatchModal';
 import CommandPalette from './components/CommandPalette';
 import WatchlistDrawer from './components/WatchlistDrawer';
+import BroLogo from './components/BroLogo';
 import { playHapticClick } from './utils/audioFeedback';
 
 const featuredDevice = {
@@ -92,12 +93,31 @@ export default function App() {
     return ['overview', 'shop', 'rides', 'assistant'].includes(hash) ? hash : 'overview';
   });
 
-  const handleTabChange = (tab) => {
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['overview', 'shop', 'rides', 'assistant'].includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const handleTabChange = (tab, payload = null) => {
     playHapticClick();
     setActiveTab(tab);
     window.location.hash = tab;
+    if (tab === 'shop' && typeof payload === 'string') {
+      setShopSearchQuery(payload);
+    }
+    if (tab === 'assistant' && typeof payload === 'string') {
+      setAssistantPrompt(payload);
+    }
   };
   const [searchQuery, setSearchQuery] = useState('');
+  const [shopSearchQuery, setShopSearchQuery] = useState('');
+  const [assistantPrompt, setAssistantPrompt] = useState('');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [watchlistOpen, setWatchlistOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(() => {
@@ -127,27 +147,18 @@ export default function App() {
             <button 
               onClick={() => handleTabChange('overview')}
               className="flex items-center gap-2.5 focus:outline-none"
+              aria-label="BRO AI Home"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#333333] flex items-center justify-center font-bold text-[#b59a50] text-xs tracking-wider shadow-sm">
-                BRO
-              </div>
-              <div className="text-left">
-                <span className="font-serif font-bold text-lg text-[#333333] tracking-tight block leading-none">
-                  Bro AI
-                </span>
-                <span className="text-[10px] text-[#9E9E9E] font-medium tracking-wide">
-                  Intelligence Matrix
-                </span>
-              </div>
+              <BroLogo size={36} showWordmark={true} />
             </button>
 
             {/* Navigation links */}
             <nav className="hidden sm:flex items-center gap-1">
               {[
                 { id: 'overview', label: 'Overview' },
-                { id: 'shop',     label: 'Electronics Store' },
-                { id: 'rides',    label: 'Ride Matrix' },
-                { id: 'assistant', label: 'AI Advisor' },
+                { id: 'shop',     label: 'Electronics Radar' },
+                { id: 'rides',    label: 'Cab & Auto Radar' },
+                { id: 'assistant', label: 'AI Copilot' },
               ].map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -215,13 +226,13 @@ export default function App() {
             {/* Clear Editorial Headline & Search */}
             <div className="max-w-2xl mb-10">
               <span className="text-xs font-semibold uppercase tracking-wider text-[#b59a50] block mb-2">
-                Autonomous Price & Mobility Intelligence
+                Smart Consumer Radar for India
               </span>
               <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#333333] mb-3 leading-tight">
-                Find the lowest price across Indian stores and ride apps.
+                Never overpay for gadgets or daily rides.
               </h1>
               <p className="text-sm text-[#666666] leading-relaxed">
-                Real-time price comparison across Amazon, Flipkart, Croma, Uber, Rapido, and Ola. Direct retailer checkouts with zero markup.
+                Real-time price checks across Amazon, Flipkart & Croma, plus instant door-to-door cab and auto fare comparisons across Uber, Ola, Rapido & Namma Yatri — direct links, zero markup.
               </p>
 
               {/* Quiet Search Bar */}
@@ -236,10 +247,16 @@ export default function App() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onClick={() => setPaletteOpen(true)}
-                    placeholder="Search for any gadget, model, or route... (Press ⌘K)"
+                    placeholder="Search any gadget, model (e.g. iQOO 15), or route... (Press ⌘K)"
                     className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#EBEBF0] rounded-lg text-xs text-[#333333] placeholder:text-[#9E9E9E] focus:outline-none focus:border-[#333333] focus:ring-1 focus:ring-[#333333] transition-colors shadow-sm cursor-pointer"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') setActiveTab('assistant');
+                      if (e.key === 'Enter') {
+                        if (searchQuery.trim()) {
+                          handleTabChange('shop', searchQuery.trim());
+                        } else {
+                          setPaletteOpen(true);
+                        }
+                      }
                     }}
                   />
                 </div>
@@ -256,15 +273,15 @@ export default function App() {
               <div className="mt-3 flex items-center gap-2 flex-wrap text-xs text-[#666666]">
                 <span className="text-[#9E9E9E]">Trending:</span>
                 {[
-                  { label: 'Galaxy S24 Ultra', tab: 'shop' },
+                  { label: 'Galaxy S24 Ultra', tab: 'shop', query: 'Galaxy S24 Ultra' },
                   { label: 'Airport commute', tab: 'rides' },
-                  { label: '65W GaN charger', tab: 'shop' },
-                  { label: 'ANC earbuds under ₹3,000', tab: 'shop' },
+                  { label: '65W GaN charger', tab: 'shop', query: '65W GaN' },
+                  { label: 'ANC earbuds under ₹3,000', tab: 'shop', query: 'ANC earbuds' },
                 ].map((item) => (
                   <button
                     key={item.label}
-                    onClick={() => setActiveTab(item.tab)}
-                    className="text-[#333333] hover:text-[#b59a50] underline underline-offset-2 transition-colors"
+                    onClick={() => handleTabChange(item.tab, item.query)}
+                    className="text-[#333333] hover:text-[#b59a50] underline underline-offset-2 transition-colors cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -372,10 +389,10 @@ export default function App() {
                 </div>
 
                 <button
-                  onClick={() => setActiveTab('shop')}
-                  className="w-full py-2.5 bg-[#F8F9FA] hover:bg-[#EBEBF0] border border-[#EBEBF0] text-[#333333] text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                  onClick={() => handleTabChange('shop')}
+                  className="w-full py-2.5 bg-[#F8F9FA] hover:bg-[#EBEBF0] border border-[#EBEBF0] text-[#333333] text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  Browse all 18 hardware categories
+                  Explore All 18 Gadget Categories
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
@@ -386,7 +403,7 @@ export default function App() {
                 
                 <div className="flex items-center justify-between pb-4 border-b border-[#F8F9FA] mb-5">
                   <span className="text-xs font-semibold uppercase tracking-wider text-[#666666]">
-                    Ride Fare Comparison
+                    Live Cab & Auto Radar
                   </span>
                   <div className="flex items-center gap-2">
                     <button
@@ -467,14 +484,14 @@ export default function App() {
                 </div>
 
                 <div className="border-t border-[#F8F9FA] pt-4 mb-5 text-xs text-[#9E9E9E] leading-relaxed">
-                  Prices calculated using actual road distances and live traffic algorithms for {featuredRide.city}.
+                  Real-time road distances & surge estimates for {featuredRide.city}. Direct app links with 0% markup.
                 </div>
 
                 <button
-                  onClick={() => setActiveTab('rides')}
-                  className="w-full py-2.5 bg-[#F8FAFC] hover:bg-[#EBEBF0] border border-[#EBEBF0] text-[#333333] text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                  onClick={() => handleTabChange('rides')}
+                  className="w-full py-2.5 bg-[#F8FAFC] hover:bg-[#EBEBF0] border border-[#EBEBF0] text-[#333333] text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  Open Live Mobility Matrix
+                  Compare All City Cabs & Autos
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
@@ -486,29 +503,42 @@ export default function App() {
         )}
 
         {/* TAB 2: ELECTRONICS */}
-        {activeTab === 'shop' && <ElectronicsShop />}
+        {activeTab === 'shop' && (
+          <ElectronicsShop
+            initialSearchQuery={shopSearchQuery}
+            onClearInitialSearch={() => setShopSearchQuery('')}
+          />
+        )}
 
         {/* TAB 3: RIDES */}
         {activeTab === 'rides' && <RidesPage />}
 
         {/* TAB 4: ASSISTANT */}
-        {activeTab === 'assistant' && <AiAssistant onNavigateRides={() => setActiveTab('rides')} />}
+        {activeTab === 'assistant' && (
+          <AiAssistant
+            onSelectCategory={() => handleTabChange('shop')}
+            onNavigateRides={() => handleTabChange('rides')}
+            initialPrompt={assistantPrompt}
+            onClearInitialPrompt={() => setAssistantPrompt('')}
+          />
+        )}
 
       </main>
 
-      {/* Quiet, Professional Footer */}
-      <footer className="border-t border-[#EBEBF0] bg-white py-8 px-4 mt-auto">
+      {/* Clean, Non-watermarked Footer */}
+      <footer className="border-t border-[#EBEBF0] bg-white py-6 px-4 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#666666]">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <BroLogo size={22} />
             <span className="font-serif font-bold text-[#333333]">Bro AI</span>
             <span>—</span>
-            <span>Indian Electronics & Mobility Price Intelligence</span>
+            <span>Smart Consumer Radar for Electronics & City Transit</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[#9E9E9E]">
-            <span>OpenStreetMap & OSRM Engine</span>
+          <div className="flex items-center gap-3 text-[#9E9E9E]">
+            <span>Direct Retailer & Cab App Deeplinks</span>
             <span>•</span>
-            <span>Zero Markup Checkout</span>
+            <span>0% Commission</span>
           </div>
         </div>
       </footer>
@@ -538,12 +568,13 @@ export default function App() {
       <CommandPalette
         isOpen={paletteOpen}
         onClose={() => setPaletteOpen(false)}
+        initialQuery={searchQuery}
         onSelectProduct={(p) => {
           setSelectedProduct(p);
           setPaletteOpen(false);
         }}
-        onSelectTab={(t) => {
-          handleTabChange(t);
+        onSelectTab={(t, payload) => {
+          handleTabChange(t, payload);
           setPaletteOpen(false);
         }}
       />

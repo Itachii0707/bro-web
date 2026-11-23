@@ -149,7 +149,7 @@ export default function WatchlistDrawer({ isOpen, onClose, onSelectProduct }) {
         {/* Footer */}
         <div className="p-4 border-t border-[#EBEBF0] bg-[#FAFAFA] text-center">
           <p className="text-[11px] text-[#9E9E9E]">
-            Checked every 6 hours via GitHub Actions Free Tier ($0 Cost)
+            Monitored continuously across stores · Instant alert when price drops
           </p>
         </div>
       </div>

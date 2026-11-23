@@ -17,39 +17,85 @@ export const CITY_LANDMARKS = {
     'Whitefield ITPL': { lat: 12.9863, lon: 77.7337, short: 'ITPL, Whitefield' },
     'HSR Layout Sector 1': { lat: 12.9116, lon: 77.6389, short: 'HSR Layout Sector 1' },
     'Electronic City Phase 1': { lat: 12.8452, lon: 77.6602, short: 'Electronic City Ph 1' },
-    'MG Road Metro Station': { lat: 12.9756, lon: 77.6066, short: 'MG Road Metro' }
+    'MG Road Metro Station': { lat: 12.9756, lon: 77.6066, short: 'MG Road Metro' },
+    'Manyata Tech Park': { lat: 13.0487, lon: 77.6213, short: 'Manyata Tech Park, Hebbal' },
   },
   Mumbai: {
     'Chhatrapati Shivaji Maharaj Airport (T2)': { lat: 19.0896, lon: 72.8656, short: 'CSMIA Airport (T2)' },
     'Bandra Kurla Complex (BKC)': { lat: 19.0657, lon: 72.8687, short: 'BKC, Bandra East' },
     'Nariman Point': { lat: 18.9256, lon: 72.8242, short: 'Nariman Point, South Mumbai' },
     'Andheri West Station': { lat: 19.1197, lon: 72.8464, short: 'Andheri West' },
-    'Powai Hiranandani': { lat: 19.1197, lon: 72.9051, short: 'Hiranandani Gardens, Powai' }
+    'Powai Hiranandani': { lat: 19.1197, lon: 72.9051, short: 'Hiranandani Gardens, Powai' },
+    'Dadar Station': { lat: 19.0178, lon: 72.8478, short: 'Dadar Central' },
+    'Bandra West': { lat: 19.0596, lon: 72.8295, short: 'Bandra Linking Road' },
+  },
+  Delhi: {
+    'Indira Gandhi International Airport (T3)': { lat: 28.5562, lon: 77.1000, short: 'IGI Airport (T3)' },
+    'Connaught Place': { lat: 28.6304, lon: 77.2177, short: 'Connaught Place, Central Delhi' },
+    'Cyber Hub Gurgaon': { lat: 28.4950, lon: 77.0895, short: 'DLF Cyber City, Gurgaon' },
+    'Noida Sector 18': { lat: 28.5708, lon: 77.3260, short: 'Sector 18 Atta Market, Noida' },
+    'Lajpat Nagar Central Market': { lat: 28.5677, lon: 77.2433, short: 'Lajpat Nagar II' },
+    'India Gate': { lat: 28.6129, lon: 77.2295, short: 'India Gate, New Delhi' },
+    'Hauz Khas Village': { lat: 28.5535, lon: 77.1943, short: 'Hauz Khas Village' },
   },
   'Delhi-NCR': {
     'Indira Gandhi International Airport (T3)': { lat: 28.5562, lon: 77.1000, short: 'IGI Airport (T3)' },
     'Connaught Place': { lat: 28.6304, lon: 77.2177, short: 'Connaught Place, Central Delhi' },
     'Cyber Hub Gurgaon': { lat: 28.4950, lon: 77.0895, short: 'DLF Cyber City, Gurgaon' },
-    'Noida Sector 62': { lat: 28.6258, lon: 77.3653, short: 'Sector 62, Noida' },
-    'Hauz Khas Village': { lat: 28.5535, lon: 77.1943, short: 'Hauz Khas Village' }
+    'Noida Sector 18': { lat: 28.5708, lon: 77.3260, short: 'Sector 18, Noida' },
+    'Lajpat Nagar Central Market': { lat: 28.5677, lon: 77.2433, short: 'Lajpat Nagar II' },
   },
   Hyderabad: {
     'Rajiv Gandhi International Airport': { lat: 17.2403, lon: 78.4294, short: 'RGIA Airport, Shamshabad' },
     'HITEC City Cyber Towers': { lat: 17.4504, lon: 78.3808, short: 'Cyber Towers, HITEC City' },
-    'Jubilee Hills Check Post': { lat: 17.4319, lon: 78.4073, short: 'Jubilee Hills' },
-    'Gachibowli Stadium': { lat: 17.4435, lon: 78.3489, short: 'Gachibowli' }
+    'Gachibowli Stadium': { lat: 17.4435, lon: 78.3489, short: 'Gachibowli Financial Dist' },
+    'Jubilee Hills Check Post': { lat: 17.4319, lon: 78.4073, short: 'Jubilee Hills Rd 36' },
+    'Secunderabad Station': { lat: 17.4399, lon: 78.4983, short: 'Secunderabad Junction' },
+    'Banjara Hills Road 12': { lat: 17.4156, lon: 78.4350, short: 'Banjara Hills Rd 12' },
   },
   Chennai: {
     'Chennai International Airport': { lat: 12.9941, lon: 80.1709, short: 'Chennai Airport, Meenambakkam' },
-    'T Nagar': { lat: 13.0418, lon: 80.2341, short: 'T. Nagar, Central Chennai' },
+    'T Nagar Panagal Park': { lat: 13.0418, lon: 80.2341, short: 'T. Nagar, Central Chennai' },
     'OMR Thoraipakkam': { lat: 12.9366, lon: 80.2312, short: 'OMR IT Corridor, Thoraipakkam' },
-    'Marina Beach': { lat: 13.0499, lon: 80.2824, short: 'Marina Beach' }
+    'Marina Beach Lighthouse': { lat: 13.0499, lon: 80.2824, short: 'Marina Beach' },
+    'Guindy Tech Park': { lat: 13.0067, lon: 80.2025, short: 'Olympia Tech Park, Guindy' },
+    'Velachery Phoenix Mall': { lat: 12.9815, lon: 80.2180, short: 'Velachery Bypass' },
   },
   Pune: {
     'Pune International Airport': { lat: 18.5822, lon: 73.9197, short: 'Pune Airport, Lohegaon' },
     'Hinjawadi Phase 1': { lat: 18.5913, lon: 73.7389, short: 'Hinjawadi IT Park Ph 1' },
-    'Koregaon Park': { lat: 18.5362, lon: 73.8940, short: 'Koregaon Park' },
-    'Viman Nagar': { lat: 18.5679, lon: 73.9143, short: 'Viman Nagar' }
+    'Koregaon Park': { lat: 18.5362, lon: 73.8940, short: 'Koregaon Park North Main Rd' },
+    'Viman Nagar': { lat: 18.5679, lon: 73.9143, short: 'Viman Nagar' },
+    'Shivajinagar Station': { lat: 18.5314, lon: 73.8446, short: 'Shivajinagar Central' },
+    'Kothrud': { lat: 18.5074, lon: 73.8077, short: 'Kothrud Stand' },
+  },
+  Kolkata: {
+    'Netaji Subhash Airport (CCU)': { lat: 22.6547, lon: 88.4467, short: 'Dumdum Airport (CCU)' },
+    'Salt Lake Sector V': { lat: 22.5804, lon: 88.4378, short: 'Sector V IT Hub, Salt Lake' },
+    'Park Street': { lat: 22.5517, lon: 88.3527, short: 'Park Street Metro' },
+    'Howrah Railway Station': { lat: 22.5855, lon: 88.3426, short: 'Howrah Station' },
+    'New Town Action Area 1': { lat: 22.5867, lon: 88.4734, short: 'New Town Axis Mall' },
+  },
+  Ahmedabad: {
+    'Sardar Patel Airport (AMD)': { lat: 23.0772, lon: 72.6347, short: 'Ahmedabad Airport (AMD)' },
+    'SG Highway': { lat: 23.0526, lon: 72.5115, short: 'SG Highway, Bodakdev' },
+    'Prahlad Nagar Garden': { lat: 23.0125, lon: 72.5108, short: 'Prahlad Nagar' },
+    'GIFT City SEZ': { lat: 23.1610, lon: 72.6840, short: 'GIFT City, Gandhinagar' },
+    'Vastrapur Lake': { lat: 23.0350, lon: 72.5293, short: 'Vastrapur' },
+  },
+  Jaipur: {
+    'Jaipur International Airport': { lat: 26.8289, lon: 75.8056, short: 'Jaipur Airport (JAI), Sanganer' },
+    'Malviya Nagar World Trade Park': { lat: 26.8530, lon: 75.8050, short: 'WTP, Malviya Nagar' },
+    'Vaishali Nagar': { lat: 26.9080, lon: 75.7410, short: 'Vaishali Nagar' },
+    'C-Scheme': { lat: 26.9090, lon: 75.8000, short: 'C-Scheme, Ashok Nagar' },
+    'Hawa Mahal Walled City': { lat: 26.9239, lon: 75.8267, short: 'Badi Chaupar, Old City' },
+  },
+  Lucknow: {
+    'Chaudhary Charan Singh Airport': { lat: 26.7606, lon: 80.8893, short: 'CCS Airport (LKO), Amausi' },
+    'Gomti Nagar Wave Mall': { lat: 26.8500, lon: 81.0000, short: 'Gomti Nagar' },
+    'Hazratganj Main Market': { lat: 26.8467, lon: 80.9462, short: 'Hazratganj Metro' },
+    'Charbagh Railway Station': { lat: 26.8322, lon: 80.9200, short: 'Charbagh Station' },
+    'Aliganj Sector H': { lat: 26.8850, lon: 80.9400, short: 'Aliganj' },
   }
 };
 

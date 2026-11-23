@@ -164,22 +164,59 @@ export function calculateFares(city, rideType, distanceKm, passengers = 1, roadD
 
 export const POPULAR_ROUTES = {
   Bangalore: [
-    { from: 'Koramangala', to: 'Whitefield', distance: 18 },
-    { from: 'Indiranagar', to: 'Electronic City', distance: 20 },
-    { from: 'MG Road', to: 'Airport (KIAL)', distance: 38 },
-    { from: 'BTM Layout', to: 'Manyata Tech Park', distance: 16 },
-    { from: 'Marathahalli', to: 'HSR Layout', distance: 10 },
-    { from: 'Jayanagar', to: 'Cubbon Park', distance: 7 },
+    { from: 'Koramangala 4th Block', to: 'Whitefield ITPL', distance: 18 },
+    { from: 'Indiranagar 100ft Road', to: 'Electronic City Phase 1', distance: 20 },
+    { from: 'MG Road Metro Station', to: 'Kempegowda International Airport', distance: 38 },
+    { from: 'HSR Layout Sector 1', to: 'Manyata Tech Park', distance: 19 },
   ],
   Mumbai: [
-    { from: 'BKC', to: 'Andheri', distance: 8 },
-    { from: 'Dadar', to: 'Bandra', distance: 5 },
-    { from: 'CST', to: 'Airport (CSIA)', distance: 24 },
-    { from: 'Powai', to: 'Nariman Point', distance: 20 },
+    { from: 'Bandra Kurla Complex (BKC)', to: 'Andheri West Station', distance: 11 },
+    { from: 'Dadar Station', to: 'Bandra West', distance: 6 },
+    { from: 'Powai Hiranandani', to: 'Nariman Point', distance: 28 },
+    { from: 'Bandra Kurla Complex (BKC)', to: 'Chhatrapati Shivaji Maharaj Airport (T2)', distance: 8 },
   ],
   Delhi: [
-    { from: 'Connaught Place', to: 'Gurgaon', distance: 30 },
-    { from: 'Lajpat Nagar', to: 'IGI Airport', distance: 18 },
-    { from: 'Noida Sector 18', to: 'India Gate', distance: 22 },
+    { from: 'Connaught Place', to: 'Cyber Hub Gurgaon', distance: 29 },
+    { from: 'Lajpat Nagar Central Market', to: 'Indira Gandhi International Airport (T3)', distance: 18 },
+    { from: 'Noida Sector 18', to: 'India Gate', distance: 16 },
+    { from: 'Hauz Khas Village', to: 'Cyber Hub Gurgaon', distance: 17 },
+  ],
+  Hyderabad: [
+    { from: 'HITEC City Cyber Towers', to: 'Rajiv Gandhi International Airport', distance: 34 },
+    { from: 'Gachibowli Stadium', to: 'Jubilee Hills Check Post', distance: 11 },
+    { from: 'Secunderabad Station', to: 'HITEC City Cyber Towers', distance: 20 },
+    { from: 'Banjara Hills Road 12', to: 'Rajiv Gandhi International Airport', distance: 30 },
+  ],
+  Chennai: [
+    { from: 'T Nagar Panagal Park', to: 'OMR Thoraipakkam', distance: 15 },
+    { from: 'Marina Beach Lighthouse', to: 'Chennai International Airport', distance: 19 },
+    { from: 'Guindy Tech Park', to: 'Velachery Phoenix Mall', distance: 6 },
+    { from: 'T Nagar Panagal Park', to: 'Chennai International Airport', distance: 12 },
+  ],
+  Pune: [
+    { from: 'Hinjawadi Phase 1', to: 'Shivajinagar Station', distance: 17 },
+    { from: 'Koregaon Park', to: 'Pune International Airport', distance: 8 },
+    { from: 'Kothrud', to: 'Viman Nagar', distance: 18 },
+    { from: 'Hinjawadi Phase 1', to: 'Pune International Airport', distance: 26 },
+  ],
+  Kolkata: [
+    { from: 'Salt Lake Sector V', to: 'Park Street', distance: 12 },
+    { from: 'Howrah Railway Station', to: 'Netaji Subhash Airport (CCU)', distance: 16 },
+    { from: 'New Town Action Area 1', to: 'Park Street', distance: 15 },
+  ],
+  Ahmedabad: [
+    { from: 'SG Highway', to: 'GIFT City SEZ', distance: 22 },
+    { from: 'Prahlad Nagar Garden', to: 'Sardar Patel Airport (AMD)', distance: 19 },
+    { from: 'Vastrapur Lake', to: 'SG Highway', distance: 5 },
+  ],
+  Jaipur: [
+    { from: 'C-Scheme', to: 'Jaipur International Airport', distance: 12 },
+    { from: 'Vaishali Nagar', to: 'Malviya Nagar World Trade Park', distance: 15 },
+    { from: 'Hawa Mahal Walled City', to: 'Jaipur International Airport', distance: 13 },
+  ],
+  Lucknow: [
+    { from: 'Hazratganj Main Market', to: 'Chaudhary Charan Singh Airport', distance: 14 },
+    { from: 'Gomti Nagar Wave Mall', to: 'Charbagh Railway Station', distance: 11 },
+    { from: 'Aliganj Sector H', to: 'Gomti Nagar Wave Mall', distance: 9 },
   ],
 };

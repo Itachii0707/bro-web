@@ -4,8 +4,8 @@ import { PRODUCTS, searchProducts, createDynamicProduct } from '../data/electron
 import { POPULAR_ROUTES } from '../data/rides';
 import { playHapticClick } from '../utils/audioFeedback';
 
-export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSelectTab }) {
-  const [query, setQuery] = useState('');
+export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSelectTab, initialQuery = '' }) {
+  const [query, setQuery] = useState(initialQuery || '');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
   const paletteRef = useRef(null);
@@ -13,10 +13,10 @@ export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSel
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery('');
+      setQuery(initialQuery || '');
       setSelectedIndex(0);
     }
-  }, [isOpen]);
+  }, [isOpen, initialQuery]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -68,9 +68,9 @@ export default function CommandPalette({ isOpen, onClose, onSelectProduct, onSel
   } : null;
 
   const defaultActions = [
-    { type: 'action', title: 'Open Ride Fare Comparison Matrix', tab: 'rides' },
-    { type: 'action', title: 'Open Electronics Store Catalog', tab: 'shop' },
-    { type: 'action', title: 'Ask AI Hardware Advisor', tab: 'assistant' },
+    { type: 'action', title: 'Compare Cabs & Autos Across City', tab: 'rides' },
+    { type: 'action', title: 'Browse Gadgets & Price Drops', tab: 'shop' },
+    { type: 'action', title: 'Ask AI Shopping & Ride Copilot', tab: 'assistant' },
   ].filter(item => {
     if (!cleanQ) return true;
     return item.title.toLowerCase().includes(cleanQ);

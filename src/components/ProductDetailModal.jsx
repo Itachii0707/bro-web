@@ -327,7 +327,7 @@ export default function ProductDetailModal({ product, onClose }) {
                   Cross-Retailer Floor
                 </span>
                 <h4 className="text-base font-serif font-bold text-[#333333]">
-                  Live Store Arbitrage Matrix
+                  Live Store Price Comparison
                 </h4>
               </div>
               <span className="text-xs text-[#008738] font-mono font-bold bg-[#F3FBEF] px-2.5 py-1 rounded-full border border-[#008738]/20 self-start sm:self-auto">
@@ -600,7 +600,7 @@ export default function ProductDetailModal({ product, onClose }) {
                   <span>Amazon</span>
                 </span>
               </div>
-              <span className="text-[#9E9E9E]">Supabase historical price logs ({priceHistory.length > 0 ? `${priceHistory.length} sync points` : '6 verified intervals'})</span>
+              <span className="text-[#9E9E9E]">Verified Multi-Store Price Trend</span>
             </div>
           </div>
 
@@ -613,10 +613,9 @@ export default function ProductDetailModal({ product, onClose }) {
               {(product.specs || []).map((spec, i) => (
                 <div key={i} className="p-3.5 bg-white border border-[#EBEBF0] rounded-xl shadow-xs">
                   <span className="text-[10px] font-semibold text-[#b59a50] uppercase tracking-wider block">
-                    Feature {i + 1}
+                    Specification {i + 1}
                   </span>
                   <div className="font-semibold text-xs text-[#333333] mt-1">{spec}</div>
-                  <div className="text-[11px] text-[#9E9E9E] mt-0.5">Verified Specification</div>
                 </div>
               ))}
             </div>

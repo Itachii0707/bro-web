@@ -23,7 +23,7 @@ const STORE_CONFIG = {
   croma:    { name: 'Croma',    color: '#008738', bg: '#F3FBEF', border: '#CDEEC6' },
 };
 
-export default function ElectronicsShop() {
+export default function ElectronicsShop({ initialSearchQuery, onClearInitialSearch }) {
   const [selectedCat, setSelectedCat] = useState(CATEGORIES[0]);
   const [selectedBudget, setSelectedBudget] = useState(BUDGET_RANGES[5]); // 10k - 20k
   const [selectedPurpose, setSelectedPurpose] = useState(null);
@@ -32,7 +32,14 @@ export default function ElectronicsShop() {
   const [compareOpen, setCompareOpen] = useState(false);
   const [compareTargetA, setCompareTargetA] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
+
+  useEffect(() => {
+    if (initialSearchQuery) {
+      setSearchQuery(initialSearchQuery);
+      if (onClearInitialSearch) onClearInitialSearch();
+    }
+  }, [initialSearchQuery]);
 
   // Live Supabase state
   const [recommendations, setRecommendations] = useState([]);
@@ -106,23 +113,23 @@ export default function ElectronicsShop() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#b59a50]">
-              Verified Indian Hardware Pricing & Deal Intelligence
+              Indian Electronics Price Radar
             </span>
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
               dataSource === 'supabase'
                 ? 'bg-[#F3FBEF] text-[#008738] border border-[#008738]/20'
                 : 'bg-[#F8F9FA] text-[#666666] border border-[#EBEBF0]'
             }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${dataSource === 'supabase' ? 'bg-[#008738] animate-pulse' : 'bg-gray-400'}`} />
-              {dataSource === 'supabase' ? 'Supabase Live' : 'Offline Mode'}
+              {dataSource === 'supabase' ? 'Live Verified' : 'Offline Mode'}
             </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#333333]">
-            Electronics Catalog & Arbitrage
+            Gadget Deals & Price Drops
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-1">
-            Compare live retail prices across Amazon, Flipkart, and Croma with algorithmic Fake Discount detection and 1–10 Deal Scores.
+            Compare genuine prices across Amazon, Flipkart, and Croma with algorithmic Fake Discount detection and 30-day price history.
           </p>
         </div>
 
