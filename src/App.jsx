@@ -260,11 +260,18 @@ export default function App() {
                   />
                 </div>
                 <button
-                  onClick={() => setPaletteOpen(true)}
+                  onClick={() => {
+                    if (searchQuery.trim()) {
+                      handleTabChange('shop', searchQuery.trim());
+                    } else {
+                      setPaletteOpen(true);
+                    }
+                  }}
                   className="px-4 py-2.5 bg-[#333333] hover:bg-[#111111] text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
                 >
-                  <span>Quick Find</span>
-                  <kbd className="font-mono text-[9px] bg-white/20 px-1 rounded">⌘K</kbd>
+                  <Search className="w-3.5 h-3.5" />
+                  <span>{searchQuery.trim() ? 'Search' : 'Quick Find'}</span>
+                  {!searchQuery.trim() && <kbd className="font-mono text-[9px] bg-white/20 px-1 rounded">⌘K</kbd>}
                 </button>
               </div>
 

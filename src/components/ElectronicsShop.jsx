@@ -231,6 +231,7 @@ export default function ElectronicsShop({ initialSearchQuery, onClearInitialSear
                 setSelectedCat(cat);
                 setSelectedPurpose(null);
                 setSelectedBudget(BUDGET_RANGES[0]);
+                setSearchQuery('');
               }}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                 isSelected
