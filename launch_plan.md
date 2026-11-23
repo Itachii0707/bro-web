@@ -65,23 +65,16 @@ Version control has been initialized, `.gitignore` confirmed to protect secrets 
 
 ---
 
-## Phase 3: GitHub Push & Autonomous Watchdog Configuration
+## Phase 3: GitHub Push & Autonomous Watchdog Configuration (Code Pushed!)
 
-Link your local repository to GitHub to activate the free 6-hour price scraper and automated weekly compaction.
+Your local repository is linked and pushed to [https://github.com/Itachii0707/bro-web](https://github.com/Itachii0707/bro-web) on branch `main`:
 
-### 1. Create a Repository on GitHub:
-- Go to [github.com/new](https://github.com/new).
-- Name your repository `bro-web` (Private or Public).
-- Click **Create repository** (do not initialize with README, as you already have one).
+- [x] Remote origin set: `https://github.com/Itachii0707/bro-web.git`
+- [x] Production code pushed to `main` branch
+- [ ] Add GitHub Repository Secrets (for autonomous watchdog & compaction)
 
-### 2. Push to GitHub:
-```bash
-git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/bro-web.git
-git push -u origin main
-```
-
-### 3. Add GitHub Repository Secrets:
-Go to your repository on GitHub: **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**:
+### Required GitHub Repository Secrets:
+Go to your repository on GitHub: [Settings -> Secrets and variables -> Actions](https://github.com/Itachii0707/bro-web/settings/secrets/actions) -> **New repository secret**:
 
 | Secret Name | Value Description | Mandatory? |
 | :--- | :--- | :---: |
