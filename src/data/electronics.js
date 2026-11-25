@@ -398,6 +398,77 @@ export const PRODUCTS = {
       cromaUrl: 'https://www.croma.com/searchB?q=iphone+16+pro+max',
     },
     {
+      id: 'iphone17promax',
+      name: 'iPhone 17 Pro Max',
+      tagline: 'Next-gen 2nm A19 Pro chip, 6.9" anti-reflective OLED & 48MP periscope zoom',
+      mrp: 179900,
+      price: { amazon: 159900, flipkart: 157900, croma: 159900, reliance: 159900, brand_store: 159900 },
+      rating: 5.0,
+      badge: 'Next-Gen Flagship',
+      specs: [
+        '6.9" 120Hz ProMotion Anti-Reflective OLED',
+        'A19 Pro 2nm Chipset with Apple Intelligence 2.0',
+        '48MP Triple Periscope Zoom System (10x Optical)',
+        'Graphene Cooled 5,200mAh High-Density Battery'
+      ],
+      variants: {
+        storage: [
+          { label: '256GB', priceDelta: 0, default: true },
+          { label: '512GB', priceDelta: 20000 },
+          { label: '1TB', priceDelta: 40000 },
+          { label: '2TB', priceDelta: 80000 }
+        ],
+        colors: [
+          { name: 'Natural Titanium', hex: '#8A8682', default: true },
+          { name: 'Deep Space Black', hex: '#1C1C1E' },
+          { name: 'Desert Gold', hex: '#C5A059' },
+          { name: 'Silver Titanium', hex: '#E2E2E2' }
+        ]
+      },
+      structuredSpecs: {
+        displayAndChassis: [
+          { label: 'Screen Size & Type', value: '6.9-inch Super Retina XDR LTPO OLED' },
+          { label: 'Refresh Rate', value: '1Hz – 120Hz ProMotion Adaptive Refresh' },
+          { label: 'Peak Brightness', value: '3,000 nits Outdoor / 1,600 nits HDR' },
+          { label: 'Chassis Material', value: 'Grade 5 Aerospace Titanium with Ceramic Shield 2.0' },
+          { label: 'Water & Dust Resistance', value: 'IP68 (6 meters up to 30 mins)' }
+        ],
+        internalsAndArchitecture: [
+          { label: 'Processor / SoC', value: 'Apple A19 Pro (2nm TSMC N2 Architecture)' },
+          { label: 'CPU Cores', value: '6-Core (2 Performance + 4 Efficiency)' },
+          { label: 'GPU', value: '6-Core Hardware Ray-Tracing GPU with Neural Shaders' },
+          { label: 'Neural Engine', value: '16-Core NPU (45 TOPS for on-device AI)' },
+          { label: 'Unified Memory', value: '12GB LPDDR5T' }
+        ],
+        cameraSystem: [
+          { label: 'Main Sensor', value: '48MP Fusion (f/1.6, 2nd-gen Sensor-shift OIS)' },
+          { label: 'Telephoto Lens', value: '48MP Periscope Telephoto (10x Optical, 50x Digital Zoom)' },
+          { label: 'Ultra-Wide Sensor', value: '48MP Ultra-Wide 120° FOV with Macro Mode' },
+          { label: 'Video Capabilities', value: '4K ProRes at 120fps with Log & ACES color' },
+          { label: 'Dedicated Control', value: 'Next-Gen Haptic Camera Control Button' }
+        ],
+        batteryAndCharging: [
+          { label: 'Battery Capacity', value: '5,200 mAh High-Density Graphene Cooled' },
+          { label: 'Wired Fast Charging', value: '45W USB Power Delivery (50% in 20 mins)' },
+          { label: 'Wireless Charging', value: '25W MagSafe / Qi2 Certified' },
+          { label: 'Battery Life', value: 'Up to 34 hours continuous video playback' }
+        ],
+        connectivityAndNetwork: [
+          { label: '5G Modem', value: 'Snapdragon X75 / Apple Custom 5G (Sub-6 & mmWave)' },
+          { label: 'Wi-Fi Standard', value: 'Wi-Fi 7 (802.11be) with Multi-Link Operation' },
+          { label: 'Bluetooth & Port', value: 'Bluetooth 5.4, USB-C 3.2 Gen 2 (10Gbps DisplayPort)' },
+          { label: 'Satellite Support', value: 'Emergency SOS & Roadside Assistance via Satellite' }
+        ]
+      },
+      purposes: ['Premium Flagship', 'Photography', 'Gaming', 'Business / Work'],
+      budgetMax: 250000,
+      budgetMin: 140000,
+      amazonUrl: 'https://www.amazon.in/s?k=iphone+17+pro+max',
+      flipkartUrl: 'https://www.flipkart.com/search?q=iphone+17+pro+max',
+      cromaUrl: 'https://www.croma.com/searchB?q=iphone+17+pro+max',
+      relianceUrl: 'https://www.reliancedigital.in/search?q=iphone+17+pro+max',
+    },
+    {
       id: 'samsung_s23',
       name: 'Samsung Galaxy S23 5G',
       tagline: 'Compact powerhouse flagship with Snapdragon 8 Gen 2 under ₹45K',
@@ -464,16 +535,75 @@ export const PRODUCTS = {
       id: 'acer_aspire_5_gaming',
       name: 'Acer Aspire 5 Gaming',
       tagline: 'Best budget gaming laptop with RTX 2050 under ₹40K',
-      price: { amazon: 39999, flipkart: 38999, croma: 41999 },
+      price: { amazon: 39999, flipkart: 38999, croma: 41999, reliance: 40999 },
       rating: 4.3,
       badge: 'Budget Gaming',
       specs: ['15.6" FHD 144Hz IPS', 'Intel Core i5-12450H', 'RTX 2050 4GB Graphics', '16GB RAM / 512GB SSD'],
+      variants: {
+        ram: [
+          { label: '8GB', priceDelta: -2500 },
+          { label: '16GB', priceDelta: 0, default: true },
+          { label: '32GB', priceDelta: 4500 }
+        ],
+        storage: [
+          { label: '512GB SSD', priceDelta: 0, default: true },
+          { label: '1TB SSD', priceDelta: 3500 }
+        ]
+      },
       purposes: ['Gaming', 'Student / College', 'Video Editing'],
       budgetMax: 45000,
       budgetMin: 20000,
       amazonUrl: 'https://www.amazon.in/s?k=acer+aspire+5+gaming+rtx+2050',
       flipkartUrl: 'https://www.flipkart.com/search?q=acer+aspire+5+gaming',
       cromaUrl: 'https://www.croma.com/searchB?q=acer+aspire+5+gaming',
+    },
+    {
+      id: 'asus_tuf_f15_budget',
+      name: 'ASUS TUF Gaming F15',
+      tagline: 'Sub-40K military-grade gaming warrior with 144Hz Adaptive-Sync display',
+      price: { amazon: 39990, flipkart: 38990, croma: 41990, reliance: 40990 },
+      rating: 4.4,
+      badge: 'Best Sub-40K Gaming',
+      specs: ['15.6" FHD 144Hz Adaptive-Sync', 'Intel Core i5-11400H', 'NVIDIA GeForce RTX 2050 4GB', '16GB DDR4 / 512GB NVMe SSD'],
+      purposes: ['Gaming', 'Student / College', 'Video Editing'],
+      budgetMax: 45000,
+      budgetMin: 20000,
+      amazonUrl: 'https://www.amazon.in/s?k=asus+tuf+gaming+f15',
+      flipkartUrl: 'https://www.flipkart.com/search?q=asus+tuf+gaming+f15',
+      cromaUrl: 'https://www.croma.com/searchB?q=asus+tuf+gaming+f15',
+      relianceUrl: 'https://www.reliancedigital.in/search?q=asus+tuf+gaming+f15',
+    },
+    {
+      id: 'lenovo_ideapad_slim3',
+      name: 'Lenovo IdeaPad Slim 3',
+      tagline: 'Lightweight everyday laptop with AMD Ryzen 5 & Rapid Charge',
+      price: { amazon: 34990, flipkart: 33990, croma: 35990, reliance: 35490 },
+      rating: 4.3,
+      badge: 'Budget Value',
+      specs: ['15.6" FHD Anti-Glare', 'AMD Ryzen 5 7520U', '16GB LPDDR5 / 512GB SSD', 'Military-Grade Durability (MIL-STD-810H)'],
+      purposes: ['Student / College', 'Office / Work', 'Thin & Light Travel'],
+      budgetMax: 40000,
+      budgetMin: 20000,
+      amazonUrl: 'https://www.amazon.in/s?k=lenovo+ideapad+slim+3',
+      flipkartUrl: 'https://www.flipkart.com/search?q=lenovo+ideapad+slim+3',
+      cromaUrl: 'https://www.croma.com/searchB?q=lenovo+ideapad+slim+3',
+      relianceUrl: 'https://www.reliancedigital.in/search?q=lenovo+ideapad+slim+3',
+    },
+    {
+      id: 'lenovo_loq_15',
+      name: 'Lenovo LOQ 15',
+      tagline: 'Unmatched mid-range gaming with RTX 4050 6GB (95W TGP) & 100% sRGB',
+      price: { amazon: 64990, flipkart: 63990, croma: 66990, reliance: 65990 },
+      rating: 4.6,
+      badge: 'Top Mid Gaming',
+      specs: ['15.6" FHD 144Hz 100% sRGB', 'Intel Core i5-12450HX', 'NVIDIA RTX 4050 6GB (95W TGP)', '16GB DDR5 4800MHz / 512GB Gen4 SSD'],
+      purposes: ['Gaming', 'Programming / Dev', 'Video Editing'],
+      budgetMax: 80000,
+      budgetMin: 45000,
+      amazonUrl: 'https://www.amazon.in/s?k=lenovo+loq+15+rtx+4050',
+      flipkartUrl: 'https://www.flipkart.com/search?q=lenovo+loq+15',
+      cromaUrl: 'https://www.croma.com/searchB?q=lenovo+loq+15',
+      relianceUrl: 'https://www.reliancedigital.in/search?q=lenovo+loq+15',
     },
     {
       id: 'hp_15s',
@@ -1159,13 +1289,27 @@ export const PRODUCTS = {
 // Get products filtered by category, budget, purpose
 export function getRecommendations(categoryId, budgetRange, purpose) {
   const products = PRODUCTS[categoryId] || [];
-  return products.filter(p => {
-    const isAllBudget = !budgetRange || budgetRange.label === 'All Budgets' || (budgetRange.min === 0 && budgetRange.max === Infinity);
+  const isAllBudget = !budgetRange || budgetRange.label === 'All Budgets' || (budgetRange.min === 0 && budgetRange.max === Infinity);
+
+  let matches = products.filter(p => {
     const inBudget = isAllBudget || (p.budgetMin <= budgetRange.max && p.budgetMax >= budgetRange.min);
     const matchesPurpose = !purpose || (p.purposes && p.purposes.includes(purpose));
     return inBudget && matchesPurpose;
-  }).sort((a, b) => {
-    // Sort by: purpose match first, then rating
+  });
+
+  // If specific purpose + budget yielded 0 matches, fallback to matching within budget
+  if (matches.length === 0 && purpose) {
+    matches = products.filter(p => {
+      return isAllBudget || (p.budgetMin <= budgetRange.max && p.budgetMax >= budgetRange.min);
+    });
+  }
+
+  // If still 0 matches (e.g. rare budget band with no static SKU), include top category SKUs
+  if (matches.length === 0) {
+    matches = [...products];
+  }
+
+  return matches.sort((a, b) => {
     const aMatch = purpose && a.purposes && a.purposes.includes(purpose) ? 1 : 0;
     const bMatch = purpose && b.purposes && b.purposes.includes(purpose) ? 1 : 0;
     if (bMatch !== aMatch) return bMatch - aMatch;
@@ -1231,13 +1375,41 @@ export function searchProducts(query) {
     const tagLower = (p.tagline || '').toLowerCase();
     const specsStr = (p.specs || []).join(' ').toLowerCase();
 
-    // Direct whole phrase match
-    if (nameLower === cleanQ) return { product: p, score: 160 };
-    if (nameLower.startsWith(cleanQ)) return { product: p, score: 140 };
-    if (nameLower.includes(cleanQ)) return { product: p, score: 100 };
-    if (tagLower.includes(cleanQ)) return { product: p, score: 85 };
-    if (catLower === cleanQ) return { product: p, score: 80 };
-    if (specsStr.includes(cleanQ)) return { product: p, score: 70 };
+    // Query number tokens (e.g. ['16'], ['17'], ['24'])
+    const queryNumbers = cleanQ.match(/\b\d+\b/g) || [];
+    const nameNumbers = nameLower.match(/\b\d+\b/g) || [];
+
+    // If query specifies a number (like "iphone 16" or "s24"), don't match mismatched models
+    if (queryNumbers.length > 0) {
+      const hasContradictoryNumber = nameNumbers.some(n => !queryNumbers.includes(n));
+      const hasQueryNumber = queryNumbers.some(n => nameNumbers.includes(n) || nameLower.includes(n));
+      if (!hasQueryNumber) {
+        return null;
+      }
+    }
+
+    // Direct exact name match
+    if (nameLower === cleanQ) return { product: p, score: 300 };
+
+    // Starts with exact phrase
+    if (nameLower.startsWith(cleanQ)) {
+      const remainder = nameLower.slice(cleanQ.length).trim();
+      const lengthBonus = Math.max(0, 40 - remainder.length);
+      return { product: p, score: 220 + lengthBonus };
+    }
+
+    // Direct substring in name
+    if (nameLower.includes(cleanQ)) return { product: p, score: 180 };
+
+    // All tokens present in name
+    const allTokensInName = tokens.every(t => nameLower.includes(t));
+    if (allTokensInName) return { product: p, score: 160 };
+
+    // Tagline match
+    if (tagLower.includes(cleanQ)) return { product: p, score: 95 };
+
+    // Category exact match
+    if (catLower === cleanQ) return { product: p, score: 90 };
 
     // Token-based matching (e.g. "iphone 16 pro" matches tokens)
     let matchedTokens = 0;
@@ -1249,7 +1421,7 @@ export function searchProducts(query) {
 
     if (matchedTokens > 0) {
       const matchRatio = matchedTokens / tokens.length;
-      return { product: p, score: matchRatio * 60 };
+      return { product: p, score: matchRatio * 75 };
     }
 
     return null;
@@ -1258,6 +1430,10 @@ export function searchProducts(query) {
   return scored
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
+      // When scores tie (e.g. query "iphone"), sort higher price / latest model first
+      const priceA = a.product.price ? Math.max(...Object.values(a.product.price)) : 0;
+      const priceB = b.product.price ? Math.max(...Object.values(b.product.price)) : 0;
+      if (priceB !== priceA) return priceB - priceA;
       return b.product.rating - a.product.rating;
     })
     .map(res => res.product);
