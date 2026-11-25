@@ -11,8 +11,15 @@ export default function AddressAutocomplete({
   placeholder = 'Enter landmark or street...',
   id
 }) {
+  const resolveDisplayValue = (val) => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object') return val.name || val.label || val.shortName || '';
+    return String(val);
+  };
+
   const inputId = id || (label ? `autocomplete-${label.toLowerCase().replace(/[^a-z0-9]/g, '-')}` : 'address-input');
-  const [query, setQuery] = useState(value?.name || value || '');
+  const [query, setQuery] = useState(() => resolveDisplayValue(value));
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,7 +28,7 @@ export default function AddressAutocomplete({
   const debounceTimer = useRef(null);
 
   useEffect(() => {
-    setQuery(value?.name || value || '');
+    setQuery(resolveDisplayValue(value));
   }, [value]);
 
   useEffect(() => {

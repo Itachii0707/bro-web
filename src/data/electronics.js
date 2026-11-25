@@ -501,17 +501,25 @@ export const PRODUCTS = {
     {
       id: 'samsung_s24ultra',
       name: 'Samsung Galaxy S24 Ultra',
-      tagline: 'The ultimate Android flagship with S Pen',
-      price: { amazon: 134999, flipkart: 129999, croma: 139999 },
+      tagline: 'The ultimate Android flagship with S Pen & Titanium Armor',
+      price: {
+        flipkart: 124999,
+        reliance: 128999,
+        amazon: 129999,
+        croma: 129999,
+        brand_store: 129999
+      },
       rating: 4.9,
       badge: 'Flagship King',
-      specs: ['6.8" Dynamic AMOLED 2X 120Hz', 'Snapdragon 8 Gen 3', '200MP + 5x Optical Zoom', 'S Pen + AI features'],
+      specs: ['6.8" Dynamic AMOLED 2X 120Hz', 'Snapdragon 8 Gen 3', '200MP + 5x Optical Zoom', 'S Pen + AI features', 'Titanium Frame + 5000mAh'],
       purposes: ['Premium Flagship', 'Photography', 'Business / Work'],
       budgetMax: Infinity,
       budgetMin: 100000,
-      amazonUrl: 'https://www.amazon.in/s?k=samsung+s24+ultra',
-      flipkartUrl: 'https://www.flipkart.com/search?q=samsung+s24+ultra',
-      cromaUrl: 'https://www.croma.com/searchB?q=samsung+s24+ultra',
+      amazonUrl: 'https://www.amazon.in/dp/B0CS5XW185',
+      flipkartUrl: 'https://www.flipkart.com/samsung-galaxy-s24-ultra-5g-titanium-gray-256-gb/p/itm93ce0d24e6df9',
+      cromaUrl: 'https://www.croma.com/samsung-galaxy-s24-ultra-5g-12gb-ram-256gb-titanium-gray-/p/304445',
+      relianceUrl: 'https://www.reliancedigital.in/samsung-galaxy-s24-ultra-5g-256-gb-12-gb-ram-titanium-gray-mobile-phone/p/494352458',
+      brandStoreUrl: 'https://www.samsung.com/in/smartphones/galaxy-s24-ultra/buy/',
     },
   ],
 
@@ -1388,6 +1396,17 @@ export function searchProducts(query) {
       }
     }
 
+    // If query specifies a strong brand or product line (iphone, macbook, samsung, asus, etc.),
+    // ensure matching products actually belong to that brand or line
+    const brandTokens = ['iphone', 'macbook', 'ipad', 'samsung', 'galaxy', 'oneplus', 'pixel', 'asus', 'acer', 'lenovo', 'dell', 'hp', 'sony', 'boat', 'realme', 'redmi', 'xiaomi', 'poco', 'iqoo', 'apple'];
+    const queryBrandTokens = tokens.filter(t => brandTokens.includes(t));
+    if (queryBrandTokens.length > 0) {
+      const matchesBrandOrFamily = queryBrandTokens.some(bt => nameLower.includes(bt) || catLower.includes(bt) || tagLower.includes(bt));
+      if (!matchesBrandOrFamily) {
+        return null;
+      }
+    }
+
     // Direct exact name match
     if (nameLower === cleanQ) return { product: p, score: 300 };
 
@@ -1421,6 +1440,11 @@ export function searchProducts(query) {
 
     if (matchedTokens > 0) {
       const matchRatio = matchedTokens / tokens.length;
+      // If user typed 2 or more words (e.g. "samsung s24 ultra"), require at least 50% match
+      // to eliminate loose single-word noise like "ultra" matching laptops
+      if (tokens.length >= 2 && matchRatio < 0.5) {
+        return null;
+      }
       return { product: p, score: matchRatio * 75 };
     }
 

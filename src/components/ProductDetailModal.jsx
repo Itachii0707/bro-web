@@ -8,6 +8,7 @@ import {
 import { fetchPriceHistory, createPriceAlert } from '../services/supabase';
 import { evaluateDealIntelligence, evaluateConditionMatch } from '../services/dealIntelligence';
 import { getAffiliateUrl, recordAffiliateClick } from '../services/affiliate';
+import { getSmartProductBuyLink } from '../services/smartBuyLinkEngine';
 import { calculateBankOfferMatrix, POPULAR_BANKS, DEFAULT_USER_CARDS } from '../services/bankOfferEngine';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import PlatformBadge from './PlatformBadge';
@@ -577,6 +578,43 @@ export default function ProductDetailModal({ product, onClose }) {
             </div>
           </div>
           
+          {/* 1-CLICK VERIFIED BEST BUY RECOMMENDATION (BuyHatke Parity) */}
+          <div className="p-4 bg-gradient-to-r from-[#F3FBEF] via-white to-[#F3FBEF] border border-[#008738]/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-beautiful-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#008738] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                <Sparkles className="w-4 h-4 text-[#FFF8D9]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#008738]">
+                    BuyHatke Parity · Verified Best Buy Recommendation
+                  </span>
+                  <span className="text-[9px] font-bold text-white bg-[#008738] px-1.5 py-0.5 rounded">
+                    1-Click Direct PDP
+                  </span>
+                </div>
+                <p className="text-xs font-semibold text-[#111827] mt-0.5">
+                  Lowest verified landed price on <span className="uppercase text-[#008738] font-bold">{minStore}</span>: <span className="text-[#008738] font-bold font-mono text-sm">₹{minPrice.toLocaleString('en-IN')}</span> (0% Markup Guaranteed)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <a
+                href={getSmartProductBuyLink(product, minStore, { storage: selectedStorage, ram: selectedRam }).url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  playHapticClick();
+                  recordAffiliateClick(minStore, product.id, product.name);
+                }}
+                className="px-4 py-2 bg-[#008738] hover:bg-[#00702e] text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              >
+                <span>Direct Buy on {minStore.toUpperCase()}</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+          
           {/* MODULE 2: Unmanipulated Base Price Comparison Table (spec.md Page 3 Module 2) */}
           <div className="bg-white rounded-xl p-5 border border-[#EBEBF0] shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#EBEBF0] mb-4 gap-2">
@@ -609,7 +647,7 @@ export default function ProductDetailModal({ product, onClose }) {
                   {storeEntries.map(([storeKey, price]) => {
                     const meta = STORE_META[storeKey] || { name: storeKey, logoTag: 'Merchant', perks: [] };
                     const isLowest = storeKey === minStore && price > 0;
-                    const cloakedUrl = getAffiliateUrl(storeKey, product.name, product[`${storeKey}Url`]);
+                    const smartLink = getSmartProductBuyLink(product, storeKey, { storage: selectedStorage, ram: selectedRam });
 
                     return (
                       <tr 
@@ -641,23 +679,31 @@ export default function ProductDetailModal({ product, onClose }) {
                           {meta.perks[0] || 'Fast Delivery'}
                         </td>
                         <td className="py-3 px-3 text-right">
-                          <a
-                            href={cloakedUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => {
-                              playHapticClick();
-                              recordAffiliateClick(storeKey, product.id, product.name);
-                            }}
-                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
-                              isLowest
-                                ? 'bg-[#008738] text-white hover:bg-[#00702e] shadow-xs'
-                                : 'bg-white border border-[#D1D5DB] text-[#374151] hover:bg-[#F3F4F6]'
-                            }`}
-                          >
-                            <span>{price > 0 ? 'Buy' : 'View'}</span>
-                            <ArrowUpRight className="w-3 h-3" />
-                          </a>
+                          <div className="flex items-center justify-end gap-1.5">
+                            {smartLink.isDirectPdp && (
+                              <span className="text-[9px] font-bold text-[#008738] bg-[#F3FBEF] border border-[#008738]/20 px-1.5 py-0.5 rounded hidden sm:inline-flex items-center gap-0.5">
+                                <Check className="w-2.5 h-2.5" />
+                                Direct PDP
+                              </span>
+                            )}
+                            <a
+                              href={smartLink.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => {
+                                playHapticClick();
+                                recordAffiliateClick(storeKey, product.id, product.name);
+                              }}
+                              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
+                                isLowest
+                                  ? 'bg-[#008738] text-white hover:bg-[#00702e] shadow-xs active:scale-95'
+                                  : 'bg-white border border-[#D1D5DB] text-[#374151] hover:bg-[#F3F4F6] active:scale-95'
+                              }`}
+                            >
+                              <span>{smartLink.isDirectPdp ? 'Direct Buy' : (price > 0 ? 'Buy' : 'View')}</span>
+                              <ArrowUpRight className="w-3 h-3" />
+                            </a>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -750,6 +796,7 @@ export default function ProductDetailModal({ product, onClose }) {
                     <th className="py-2.5 px-3">Monthly EMI</th>
                     <th className="py-2.5 px-3">Hidden Fees (GST+Proc.)</th>
                     <th className="py-2.5 px-3 font-bold text-[#111827]">Net Landed Price</th>
+                    <th className="py-2.5 px-3 text-right">Direct Buy Link</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F3F4F6]">
@@ -794,6 +841,25 @@ export default function ProductDetailModal({ product, onClose }) {
                       </td>
                       <td className="py-3 px-3 font-mono font-bold text-sm text-[#111827]">
                         ₹{deal.netLandedPrice.toLocaleString('en-IN')}
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <a
+                          href={getSmartProductBuyLink(product, deal.merchant, { storage: selectedStorage, ram: selectedRam }).url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => {
+                            playHapticClick();
+                            recordAffiliateClick(deal.merchant, product.id, product.name);
+                          }}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                            deal.isBestDeal
+                              ? 'bg-[#008738] text-white hover:bg-[#00702e] shadow-xs active:scale-95'
+                              : 'bg-white border border-[#D1D5DB] text-[#374151] hover:bg-[#F3F4F6] active:scale-95'
+                          }`}
+                        >
+                          <span>Buy on {deal.merchant.toUpperCase()}</span>
+                          <ArrowUpRight className="w-2.5 h-2.5" />
+                        </a>
                       </td>
                     </tr>
                   ))}

@@ -23,15 +23,21 @@ const featuredDevice = {
   tagline: 'The ultimate Android flagship with S Pen & Titanium Armor',
   subtitle: '256GB Storage, Titanium Gray',
   category: 'smartphone',
-  rating: 4.8,
+  rating: 4.9,
   reviewCount: '1,420 ratings',
   mrp: 139999,
   price: {
-    croma: 124999,
-    flipkart: 127499,
+    flipkart: 124999,
+    reliance: 128999,
     amazon: 129999,
-    reliance: 128999
+    croma: 129999,
+    brand_store: 129999
   },
+  amazonUrl: 'https://www.amazon.in/dp/B0CS5XW185',
+  flipkartUrl: 'https://www.flipkart.com/samsung-galaxy-s24-ultra-5g-titanium-gray-256-gb/p/itm93ce0d24e6df9',
+  cromaUrl: 'https://www.croma.com/samsung-galaxy-s24-ultra-5g-12gb-ram-256gb-titanium-gray-/p/304445',
+  relianceUrl: 'https://www.reliancedigital.in/samsung-galaxy-s24-ultra-5g-256-gb-12-gb-ram-titanium-gray-mobile-phone/p/494352458',
+  brandStoreUrl: 'https://www.samsung.com/in/smartphones/galaxy-s24-ultra/buy/',
   specs: [
     '6.8-inch Dynamic AMOLED 2X, 120Hz',
     'Snapdragon 8 Gen 3 Mobile Platform',
@@ -40,25 +46,32 @@ const featuredDevice = {
   ],
   stores: [
     {
-      name: 'croma',
+      name: 'flipkart',
       price: 124999,
-      delivery: 'Delivery by tomorrow',
+      delivery: 'Free 2-day delivery',
       isLowest: true,
-      url: 'https://www.croma.com/searchB?q=samsung+s24+ultra'
+      url: 'https://www.flipkart.com/samsung-galaxy-s24-ultra-5g-titanium-gray-256-gb/p/itm93ce0d24e6df9'
     },
     {
-      name: 'flipkart',
-      price: 127499,
-      delivery: 'Free 2-day delivery',
+      name: 'reliance',
+      price: 128999,
+      delivery: 'Store pickup & home delivery',
       isLowest: false,
-      url: 'https://www.flipkart.com/search?q=samsung+s24+ultra'
+      url: 'https://www.reliancedigital.in/samsung-galaxy-s24-ultra-5g-256-gb-12-gb-ram-titanium-gray-mobile-phone/p/494352458'
     },
     {
       name: 'amazon',
       price: 129999,
       delivery: 'Prime next-day delivery',
       isLowest: false,
-      url: 'https://www.amazon.in/s?k=samsung+s24+ultra'
+      url: 'https://www.amazon.in/dp/B0CS5XW185'
+    },
+    {
+      name: 'croma',
+      price: 129999,
+      delivery: 'Delivery by tomorrow',
+      isLowest: false,
+      url: 'https://www.croma.com/samsung-galaxy-s24-ultra-5g-12gb-ram-256gb-titanium-gray-/p/304445'
     }
   ]
 };

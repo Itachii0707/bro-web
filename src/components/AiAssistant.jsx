@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { PRODUCTS, getRecommendations, getCheapestStore, searchProducts, createDynamicProduct } from '../data/electronics';
 import { calculateFares, RIDE_TYPES } from '../data/rides';
+import { getSmartProductBuyLink } from '../services/smartBuyLinkEngine';
 import PlatformBadge from './PlatformBadge';
 
 const SAMPLE_PROMPTS = [
@@ -338,17 +339,24 @@ export default function AiAssistant({ onSelectCategory, onNavigateRides, initial
                                 ₹{cheapest.price ? cheapest.price.toLocaleString('en-IN') : 'Check Live'}
                               </span>
                             </div>
-                            <PlatformBadge platformKey={cheapest.store} size="xs" />
+                            <div className="flex items-center gap-1.5">
+                              {getSmartProductBuyLink(prod, cheapest.store).isDirectPdp && (
+                                <span className="text-[9px] font-bold text-[#008738] bg-[#F3FBEF] border border-[#008738]/20 px-1 py-0.2 rounded hidden sm:inline">
+                                  Direct PDP
+                                </span>
+                              )}
+                              <PlatformBadge platformKey={cheapest.store} size="xs" />
+                            </div>
                           </div>
                         </div>
 
                         <a 
-                          href={prod[`${cheapest.store}Url`] || prod.amazonUrl || prod.flipkartUrl}
+                          href={getSmartProductBuyLink(prod, cheapest.store).url}
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="mt-3 w-full py-2 bg-[#333333] hover:bg-[#111111] text-white font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                          className="mt-3 w-full py-2 bg-[#008738] hover:bg-[#00702e] text-white font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-98 cursor-pointer"
                         >
-                          <span>Check Deal</span>
+                          <span>{getSmartProductBuyLink(prod, cheapest.store).isDirectPdp ? `Direct Buy on ${cheapest.store.toUpperCase()}` : 'Check Live Store Deal'}</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </div>
